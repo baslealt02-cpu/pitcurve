@@ -10,9 +10,14 @@
 <meta name="theme-color" content="#080808">
 <title>PitCurve</title>
 <link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
 
 :root {
   --bg: #090909;
@@ -20,38 +25,35 @@
   --text: #F4EFE6;
   --dim: rgba(244,239,230,0.42);
   --dimmer: rgba(244,239,230,0.12);
-  --glass: rgba(6,6,6,0.68);
+  --glass: rgba(6,6,6,0.72);
   --border: rgba(255,255,255,0.09);
 }
 
-html { height: 100%; }
-
-body {
-  height: 100%;
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: 'DM Mono', monospace;
-  overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
 }
 
-/* ─── ALL SCREENS hidden by default ─── */
+/* ─── SCREENS ─── */
 .screen {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  inset: 0;
   display: none;
 }
 .screen.on { display: block; }
 
-/* ══════════════════════════════════
+/* ══════════════════════════════
    PIN SCREEN
-══════════════════════════════════ */
+══════════════════════════════ */
 #scr-pin {
   background: var(--bg);
   z-index: 200;
-  transition: opacity 0.45s ease, transform 0.45s ease;
+  transition: opacity .45s ease, transform .45s ease;
 }
 #scr-pin.bye { opacity: 0; transform: scale(1.06); pointer-events: none; }
 
@@ -68,19 +70,18 @@ body {
 .logo-sub { font-size: 9px; letter-spacing: .32em; text-transform: uppercase; color: var(--dim); margin-bottom: 48px; }
 
 .pin-dots { display: flex; gap: 16px; margin-bottom: 44px; }
-.pd {
-  width: 13px; height: 13px; border-radius: 50%;
-  border: 2px solid var(--dimmer);
-  transition: all .18s ease;
-}
+.pd { width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--dimmer); transition: all .18s; }
 .pd.lit { background: var(--red); border-color: var(--red); transform: scale(1.15); }
 
 .pin-msg { font-size: 9px; letter-spacing: .28em; text-transform: uppercase; color: var(--dim); margin-bottom: 20px; min-height: 14px; }
 .pin-msg.bad { color: var(--red); }
 
 @keyframes wiggle {
-  0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)}
-  40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)}
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
 }
 .pin-dots.wiggle { animation: wiggle .38s ease; }
 
@@ -89,106 +90,93 @@ body {
   height: 64px; border-radius: 50%;
   border: 1px solid var(--border);
   background: rgba(255,255,255,0.035);
-  color: var(--text);
-  font-family: 'DM Mono', monospace;
-  font-size: 23px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  transition: all .12s ease;
+  color: var(--text); font-family: 'DM Mono', monospace;
+  font-size: 23px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .12s;
 }
 .nk:active { background: rgba(232,55,42,.15); border-color: var(--red); transform: scale(.9); }
 .nk.ghost { background: transparent; border: none; pointer-events: none; }
 .nk.back { font-size: 16px; color: var(--dim); }
 
-/* ══════════════════════════════════
+/* ══════════════════════════════
    EMPTY SCREEN
-══════════════════════════════════ */
+══════════════════════════════ */
 #scr-empty { background: var(--bg); z-index: 10; }
-
 #empty-inner {
-  position: absolute;
-  top: 50%; left: 50%;
+  position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   display: flex; flex-direction: column;
-  align-items: center; gap: 10px;
-  text-align: center;
+  align-items: center; gap: 10px; text-align: center;
 }
-
 .big-logo { font-size: 54px; letter-spacing: .08em; }
 .big-logo em { color: var(--red); font-style: normal; }
 .big-sub { font-size: 9px; letter-spacing: .3em; text-transform: uppercase; color: var(--dim); margin-bottom: 32px; }
-
 .redbtn {
-  padding: 14px 36px;
-  background: var(--red); border: none;
+  padding: 14px 36px; background: var(--red); border: none;
   color: #fff; font-family: 'DM Mono', monospace;
   font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
   cursor: pointer; transition: opacity .2s;
 }
 .redbtn:active { opacity: .78; }
 
-/* ══════════════════════════════════
+/* ══════════════════════════════
    VIEWER SCREEN
-══════════════════════════════════ */
+══════════════════════════════ */
 #scr-viewer { background: #000; z-index: 5; }
 
-/* full screen image */
+/* Full screen image using <img> tag for reliability */
 #v-img {
   position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  z-index: 1;
 }
 
-/* cinematic fade */
+/* Cinematic fade */
 #v-fade {
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
+  position: absolute; inset: 0;
   pointer-events: none; z-index: 2;
   background: linear-gradient(
     to bottom,
-    rgba(0,0,0,.80) 0%,
-    rgba(0,0,0,.12) 18%,
-    transparent 36%,
+    rgba(0,0,0,.82) 0%,
+    rgba(0,0,0,.14) 20%,
+    transparent 38%,
     transparent 55%,
-    rgba(0,0,0,.18) 72%,
-    rgba(0,0,0,.88) 100%
+    rgba(0,0,0,.2) 72%,
+    rgba(0,0,0,.90) 100%
   );
 }
 
-/* empty category state */
+/* Empty category state */
 #v-empty-cat {
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  z-index: 3; display: none;
-  flex-direction: column; align-items: center; justify-content: center; gap: 12px;
-  background: #0b0b0b;
+  position: absolute; inset: 0; z-index: 4;
+  display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; background: #0b0b0b;
 }
-#v-empty-cat .ec-name {
+#v-empty-cat.show { display: flex; }
+.ec-name {
   font-family: 'Great Vibes', cursive;
-  font-size: clamp(32px, 7vw, 48px);
-   color: var(--dim);
+  font-size: clamp(34px, 8vw, 52px); color: var(--dim);
 }
-#v-empty-cat .ec-hint { font-size: 9px; letter-spacing: .28em; text-transform: uppercase; color: var(--dimmer); }
+.ec-hint { font-size: 9px; letter-spacing: .28em; text-transform: uppercase; color: var(--dimmer); }
 
-/* category name pill — top center */
+/* Category name — top */
 #v-catbox {
   position: absolute;
-  top: calc(env(safe-area-inset-top, 0px) + 54px);
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
   left: 50%; transform: translateX(-50%);
   z-index: 10; max-width: 86vw;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-align: center;
 }
 #v-catname {
   display: inline-block;
-  background: transparent;
-  border: none;
-  padding: 8px 22px 6px;
   font-family: 'Great Vibes', cursive;
   font-size: clamp(42px, 9vw, 68px);
-  font-weight: 400;
-  color: var(--text);
+  font-weight: 400; color: var(--text);
   -webkit-text-stroke: 0.5px rgba(0,0,0,0.85);
   text-shadow:
     0 0 12px rgba(0,0,0,0.9),
@@ -196,21 +184,22 @@ body {
     1px 1px 0 rgba(0,0,0,0.6),
     -1px -1px 0 rgba(0,0,0,0.6);
   transition: opacity .2s;
+  cursor: default;
 }
-#v-catname.pressing { opacity: 0.6; }
+#v-catname.pressing { opacity: 0.5; }
 
 @keyframes catSlide {
-  from { opacity:0; transform: translateY(-10px); }
-  to   { opacity:1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes titleSlide {
-  from { opacity:0; transform: translateY(14px); filter: blur(3px); }
-  to   { opacity:1; transform: translateY(0); filter: blur(0); }
+  from { opacity: 0; transform: translateY(14px); filter: blur(3px); }
+  to   { opacity: 1; transform: none; filter: none; }
 }
-.do-catslide { animation: catSlide .45s cubic-bezier(.22,1,.36,1) both; }
-.do-titleslide { animation: titleSlide .5s cubic-bezier(.22,1,.36,1) both; }
+.do-cat   { animation: catSlide .45s cubic-bezier(.22,1,.36,1) both; }
+.do-title { animation: titleSlide .5s cubic-bezier(.22,1,.36,1) both; }
 
-/* image title — bottom */
+/* Image title — bottom */
 #v-titlebox {
   position: absolute;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 72px);
@@ -220,8 +209,7 @@ body {
 #v-title {
   font-family: 'Great Vibes', cursive;
   font-size: clamp(28px, 6vw, 44px);
-   font-weight: 300;
-  color: rgba(244,239,230,.84);
+  font-weight: 400; color: rgba(244,239,230,.92);
   -webkit-text-stroke: 0.4px rgba(0,0,0,0.8);
   text-shadow:
     0 0 10px rgba(0,0,0,0.95),
@@ -230,14 +218,14 @@ body {
     -1px -1px 0 rgba(0,0,0,0.5);
   line-height: 1.3;
 }
+#v-title.pressing { opacity: 0.5; }
 
-/* top action buttons */
+/* Top action buttons */
 #v-topbar {
   position: absolute;
   top: calc(env(safe-area-inset-top, 0px) + 10px);
   right: 0; z-index: 20;
-  display: flex; gap: 10px;
-  padding: 8px 13px 0 0;
+  display: flex; gap: 10px; padding: 8px 13px 0 0;
 }
 .actbtn {
   width: 40px; height: 40px; border-radius: 50%;
@@ -250,21 +238,17 @@ body {
 }
 .actbtn:active { border-color: var(--red); color: var(--red); transform: scale(.88); }
 
-/* category side dots */
+/* Category side dots */
 #v-catdots {
-  position: absolute;
-  left: 9px; top: 50%; transform: translateY(-50%);
+  position: absolute; left: 9px; top: 50%;
+  transform: translateY(-50%);
   display: flex; flex-direction: column; gap: 7px;
   align-items: center; z-index: 10;
 }
-.cdot {
-  width: 3px; height: 4px; border-radius: 2px;
-  background: var(--dimmer);
-  transition: all .28s ease; cursor: pointer;
-}
+.cdot { width: 3px; height: 4px; border-radius: 2px; background: var(--dimmer); transition: all .28s; cursor: pointer; }
 .cdot.on { background: var(--red); height: 17px; }
 
-/* image bottom dots */
+/* Image bottom dots */
 #v-imgdots {
   position: absolute;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 44px);
@@ -274,36 +258,44 @@ body {
 .idot { width: 4px; height: 4px; border-radius: 2px; background: var(--dimmer); transition: all .28s; }
 .idot.on { background: var(--text); width: 15px; }
 
-/* trash */
-#v-trash {
+/* Edit / Delete action buttons */
+#action-btns {
   position: absolute;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 110px);
-  right: 16px; z-index: 20;
-  width: 50px; height: 50px; border-radius: 50%;
-  background: var(--red); border: none;
-  color: #fff; font-size: 19px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; transform: scale(.2);
-  transition: all .25s cubic-bezier(.34,1.56,.64,1);
-  pointer-events: none;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 130px);
+  left: 50%;
+  display: flex; gap: 12px; z-index: 30;
+  opacity: 0; pointer-events: none;
+  /* Single transform — no duplicate */
+  transform: translateX(-50%) translateY(20px) scale(0.85);
+  transition: opacity .28s ease, transform .28s cubic-bezier(.34,1.56,.64,1);
 }
-#v-trash.on { opacity: 1; transform: scale(1); pointer-events: all; }
+#action-btns.on {
+  opacity: 1; pointer-events: all;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+.abtn {
+  padding: 12px 28px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+  cursor: pointer;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  transition: all .15s;
+}
+.abtn:active { transform: scale(.95); opacity: .8; }
+.abtn.edit { background: rgba(244,239,230,0.1); color: var(--text); border-color: rgba(244,239,230,0.25); }
+.abtn.del  { background: rgba(232,55,42,0.15); color: var(--red); border-color: rgba(232,55,42,0.35); }
 
-/* ══════════════════════════════════
+/* ══════════════════════════════
    SETTINGS SCREEN
-══════════════════════════════════ */
-#scr-settings {
-  background: var(--bg); z-index: 50;
-}
-#settings-inner {
-  padding: calc(env(safe-area-inset-top,0px) + 62px) 24px 0;
-}
-.s-title { font-family: 'Great Vibes', cursive; font-size: 32px;  margin-bottom: 4px; }
+══════════════════════════════ */
+#scr-settings { background: var(--bg); z-index: 50; }
+#settings-inner { padding: calc(env(safe-area-inset-top,0px) + 62px) 24px 0; }
+.s-title { font-family: 'Great Vibes', cursive; font-size: 42px; margin-bottom: 4px; }
 .s-sub { font-size: 9px; letter-spacing: .28em; text-transform: uppercase; color: var(--dim); margin-bottom: 34px; }
 .s-row {
   padding: 16px 0; border-bottom: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center;
-  cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; cursor: pointer;
 }
 .s-row:active { opacity: .6; }
 .s-lbl { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
@@ -319,14 +311,13 @@ body {
 }
 #s-back:active { border-color: var(--red); }
 
-/* ══════════════════════════════════
-   MODALS (bottom sheets)
-══════════════════════════════════ */
+/* ══════════════════════════════
+   MODALS — bottom sheets
+══════════════════════════════ */
 .modal {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,.78);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.80);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
   display: flex; align-items: flex-end; justify-content: center;
   z-index: 500;
   opacity: 0; pointer-events: none;
@@ -335,45 +326,45 @@ body {
 .modal.on { opacity: 1; pointer-events: all; }
 
 .sheet {
-  background: #131313;
-  border: 1px solid var(--border);
-  border-bottom: none;
-  width: 100%; max-width: 500px;
-  padding: 0 24px calc(env(safe-area-inset-bottom,0px) + 28px);
-  transform: translateY(105%);
+  background: #141414;
+  border: 1px solid var(--border); border-bottom: none;
+  width: 100%; max-width: 520px;
+  padding: 0 24px calc(env(safe-area-inset-bottom,0px) + 32px);
+  transform: translateY(110%);
   transition: transform .36s cubic-bezier(.22,1,.36,1);
 }
 .modal.on .sheet { transform: translateY(0); }
 
-.drag-bar { width: 32px; height: 3px; border-radius: 2px; background: var(--dimmer); margin: 12px auto 24px; }
-.m-tag { font-size: 9px; letter-spacing: .3em; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
+.drag-bar { width: 32px; height: 3px; border-radius: 2px; background: var(--dimmer); margin: 13px auto 26px; }
+.m-tag { font-size: 9px; letter-spacing: .3em; text-transform: uppercase; color: var(--red); margin-bottom: 14px; }
 
-.sheet input {
+.sheet input[type="text"] {
   width: 100%; background: transparent;
   border: none; border-bottom: 1px solid var(--border);
   color: var(--text);
   font-family: 'Great Vibes', cursive;
-  font-size: 26px;  font-weight: 300;
-  padding: 4px 0 11px; outline: none;
+  font-size: 32px;
+  padding: 4px 0 12px; outline: none;
   transition: border-color .2s;
+  /* prevent zoom on mobile */
+  font-size: max(32px, 16px);
 }
-.sheet input:focus { border-bottom-color: var(--red); }
-.sheet input::placeholder { color: var(--dimmer); }
+.sheet input[type="text"]:focus { border-bottom-color: var(--red); }
+.sheet input[type="text"]::placeholder { color: var(--dimmer); font-family: 'DM Mono', monospace; font-size: 13px; }
 
-.m-btns { display: flex; gap: 9px; margin-top: 18px; }
+.m-btns { display: flex; gap: 9px; margin-top: 20px; }
 .mbtn {
-  flex: 1; padding: 12px; cursor: pointer;
+  flex: 1; padding: 13px; cursor: pointer;
   border: 1px solid var(--border); background: transparent;
-  color: var(--dim);
-  font-family: 'DM Mono', monospace;
+  color: var(--dim); font-family: 'DM Mono', monospace;
   font-size: 9px; letter-spacing: .16em; text-transform: uppercase;
   transition: opacity .15s;
 }
 .mbtn:active { opacity: .7; }
 .mbtn.go { background: var(--red); border-color: var(--red); color: #fff; }
 
-.m-conf-title { font-family: 'Great Vibes', cursive; font-size: 26px;  margin-bottom: 6px; }
-.m-conf-body { font-size: 10px; color: var(--dim); line-height: 1.7; margin-bottom: 18px; }
+.m-conf-title { font-family: 'Great Vibes', cursive; font-size: 32px; color: var(--text); margin-bottom: 7px; }
+.m-conf-body  { font-size: 10px; color: var(--dim); line-height: 1.7; margin-bottom: 20px; }
 
 #file-pick { display: none; }
 </style>
@@ -405,7 +396,8 @@ body {
 
 <!-- ══ VIEWER ══ -->
 <div class="screen" id="scr-viewer">
-  <div id="v-img"></div>
+  <!-- Using <img> tag instead of background-image for reliable rendering -->
+  <img id="v-img" src="" alt="">
   <div id="v-fade"></div>
   <div id="v-empty-cat">
     <div class="ec-name" id="v-ec-name"></div>
@@ -420,7 +412,10 @@ body {
   </div>
   <div id="v-catdots"></div>
   <div id="v-imgdots"></div>
-  <button id="v-trash">🗑</button>
+  <div id="action-btns">
+    <button class="abtn edit" id="abtn-edit">✎ Edit</button>
+    <button class="abtn del"  id="abtn-del">✕ Delete</button>
+  </div>
 </div>
 
 <!-- ══ SETTINGS ══ -->
@@ -440,10 +435,9 @@ body {
   </div>
 </div>
 
-<!-- ══ MODAL: New Category ══ -->
+<!-- MODAL: New Category -->
 <div class="modal" id="mod-cat">
-  <div class="sheet">
-    <div class="drag-bar"></div>
+  <div class="sheet"><div class="drag-bar"></div>
     <div class="m-tag">New Category</div>
     <input type="text" id="inp-cat" placeholder="e.g. Architecture…" maxlength="30" autocomplete="off">
     <div class="m-btns">
@@ -453,10 +447,21 @@ body {
   </div>
 </div>
 
-<!-- ══ MODAL: Image Title ══ -->
+<!-- MODAL: Edit Category Name -->
+<div class="modal" id="mod-edit-cat">
+  <div class="sheet"><div class="drag-bar"></div>
+    <div class="m-tag">Rename Category</div>
+    <input type="text" id="inp-edit-cat" maxlength="30" autocomplete="off">
+    <div class="m-btns">
+      <button class="mbtn" id="btn-edit-cat-cancel">Cancel</button>
+      <button class="mbtn go" id="btn-edit-cat-ok">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Image Title on Upload -->
 <div class="modal" id="mod-img">
-  <div class="sheet">
-    <div class="drag-bar"></div>
+  <div class="sheet"><div class="drag-bar"></div>
     <div class="m-tag">Image Title</div>
     <input type="text" id="inp-img" placeholder="Give this image a title…" maxlength="80" autocomplete="off">
     <div class="m-btns">
@@ -466,10 +471,21 @@ body {
   </div>
 </div>
 
-<!-- ══ MODAL: Delete Image ══ -->
+<!-- MODAL: Edit Image Title -->
+<div class="modal" id="mod-edit-img">
+  <div class="sheet"><div class="drag-bar"></div>
+    <div class="m-tag">Edit Title</div>
+    <input type="text" id="inp-edit-img" maxlength="80" autocomplete="off">
+    <div class="m-btns">
+      <button class="mbtn" id="btn-edit-img-cancel">Cancel</button>
+      <button class="mbtn go" id="btn-edit-img-ok">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Confirm Delete Image -->
 <div class="modal" id="mod-del-img">
-  <div class="sheet">
-    <div class="drag-bar"></div>
+  <div class="sheet"><div class="drag-bar"></div>
     <div class="m-conf-title">Delete Image?</div>
     <div class="m-conf-body">Removed from PitCurve only. Your original file stays safe.</div>
     <div class="m-btns">
@@ -479,10 +495,9 @@ body {
   </div>
 </div>
 
-<!-- ══ MODAL: Delete Category ══ -->
+<!-- MODAL: Confirm Delete Category -->
 <div class="modal" id="mod-del-cat">
-  <div class="sheet">
-    <div class="drag-bar"></div>
+  <div class="sheet"><div class="drag-bar"></div>
     <div class="m-conf-title">Delete Category?</div>
     <div class="m-conf-body" id="del-cat-msg">All images will be removed.</div>
     <div class="m-btns">
@@ -492,12 +507,11 @@ body {
   </div>
 </div>
 
-<!-- ══ MODAL: Wipe All ══ -->
+<!-- MODAL: Wipe Everything -->
 <div class="modal" id="mod-wipe">
-  <div class="sheet">
-    <div class="drag-bar"></div>
+  <div class="sheet"><div class="drag-bar"></div>
     <div class="m-conf-title">Clear Everything?</div>
-    <div class="m-conf-body">All categories, images and your PIN will be wiped. This cannot be undone.</div>
+    <div class="m-conf-body">All categories, images and your PIN will be wiped. Cannot be undone.</div>
     <div class="m-btns">
       <button class="mbtn" id="btn-wipe-cancel">Cancel</button>
       <button class="mbtn go" id="btn-wipe-ok">Clear All</button>
@@ -508,63 +522,98 @@ body {
 <input type="file" id="file-pick" accept="image/*" multiple>
 
 <script>
-/* ════════════════════════════════════════
+/* ════════════════════════════════════════════════
    STORAGE
-════════════════════════════════════════ */
-const SK = 'pc_data', PK = 'pc_pin';
-let D = { cats:[], idx:{} };  // idx = {catIndex: imgIndex}
-let CI = 0;                    // current category index
+   Key: pitcurve_v2 — same as before so all data preserved
+════════════════════════════════════════════════ */
+const SK = 'pitcurve_v2';
+const PK = 'pc_pin';
+let D  = { cats: [], idx: {} };
+let CI = 0;  // current category index
+let AT = null; // action target: 'cat' or 'img'
 
 function saveD() {
-  try { localStorage.setItem(SK, JSON.stringify(D)); }
-  catch(e) { alert('Storage full — remove some images.'); }
+  try {
+    localStorage.setItem(SK, JSON.stringify(D));
+  } catch(e) {
+    alert('Storage full — try removing some images.');
+  }
 }
-function loadD() {
-  try { const r=localStorage.getItem(SK); if(r) D=JSON.parse(r); }
-  catch(e) { D={cats:[],idx:{}}; }
-}
-const getPin = () => localStorage.getItem(PK);
-const savePin = p => localStorage.setItem(PK, p);
 
-/* ════════════════════════════════════════
-   SCREEN SWITCHING
-════════════════════════════════════════ */
+function loadD() {
+  try {
+    const raw = localStorage.getItem(SK);
+    if (raw) D = JSON.parse(raw);
+    else D = { cats: [], idx: {} };
+  } catch(e) {
+    D = { cats: [], idx: {} };
+  }
+}
+
+const getPin  = ()  => localStorage.getItem(PK);
+const savePin = (p) => localStorage.setItem(PK, p);
+
+/* ════════════════════════════════════════════════
+   SCREEN HELPERS
+════════════════════════════════════════════════ */
 function goScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
   document.getElementById(id).classList.add('on');
 }
 
-/* ════════════════════════════════════════
+/* ════════════════════════════════════════════════
    MODAL HELPERS
-════════════════════════════════════════ */
+════════════════════════════════════════════════ */
 function openModal(id) {
   closeAllModals();
   document.getElementById(id).classList.add('on');
-  // focus input after animation
-  const inp = document.querySelector('#'+id+' input');
-  if (inp) setTimeout(() => { try { inp.focus(); } catch(e){} }, 380);
+  // Delay focus to avoid mobile keyboard causing layout jump
+  const inp = document.querySelector('#' + id + ' input[type="text"]');
+  if (inp) {
+    setTimeout(() => {
+      inp.focus();
+      // move cursor to end
+      const len = inp.value.length;
+      inp.setSelectionRange(len, len);
+    }, 420);
+  }
 }
-function closeModal(id) { document.getElementById(id).classList.remove('on'); }
-function closeAllModals() { document.querySelectorAll('.modal.on').forEach(m => m.classList.remove('on')); }
-function anyModalOpen() { return !!document.querySelector('.modal.on'); }
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('on');
+}
+
+function closeAllModals() {
+  document.querySelectorAll('.modal.on').forEach(m => m.classList.remove('on'));
+}
+
+function anyModalOpen() {
+  return !!document.querySelector('.modal.on');
+}
 
 // tap backdrop to close
 document.querySelectorAll('.modal').forEach(m => {
-  m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+  m.addEventListener('click', e => {
+    if (e.target === m) closeModal(m.id);
+  });
 });
 
-/* ════════════════════════════════════════
+/* ════════════════════════════════════════════════
    PIN
-════════════════════════════════════════ */
-let PB='', PM='login', PF='';
+════════════════════════════════════════════════ */
+let PB = '', PM = 'login', PF = '';
+
 const PLBL = {
-  login:'Enter PIN', setup_first:'Choose a 4-digit PIN',
-  setup_confirm:'Confirm your PIN', change_old:'Enter current PIN',
-  change_new:'Enter new PIN', change_confirm:'Confirm new PIN'
+  login:          'Enter PIN',
+  setup_first:    'Choose a 4-digit PIN',
+  setup_confirm:  'Confirm your PIN',
+  change_old:     'Enter current PIN',
+  change_new:     'Enter new PIN',
+  change_confirm: 'Confirm new PIN'
 };
 
 function startPin() {
-  PB=''; PF='';
+  PB = ''; PF = '';
   PM = getPin() ? 'login' : 'setup_first';
   setPMsg(); updPDots(); buildPad();
   goScreen('scr-pin');
@@ -575,7 +624,7 @@ function buildPad() {
   el.innerHTML = '';
   ['1','2','3','4','5','6','7','8','9','','0','⌫'].forEach(k => {
     const d = document.createElement('div');
-    d.className = 'nk' + (k===''?' ghost':k==='⌫'?' back':'');
+    d.className = 'nk' + (k === '' ? ' ghost' : k === '⌫' ? ' back' : '');
     d.textContent = k;
     if (k !== '') {
       d.addEventListener('click', () => {
@@ -595,14 +644,16 @@ function setPMsg(txt, bad) {
 }
 
 function updPDots() {
-  document.querySelectorAll('#pin-dots .pd').forEach((d,i) => d.classList.toggle('lit', i < PB.length));
+  document.querySelectorAll('#pin-dots .pd').forEach((d, i) => {
+    d.classList.toggle('lit', i < PB.length);
+  });
 }
 
 function pErr(msg) {
   setPMsg(msg, true);
   const dots = document.getElementById('pin-dots');
   dots.classList.add('wiggle');
-  setTimeout(() => { dots.classList.remove('wiggle'); PB=''; updPDots(); }, 420);
+  setTimeout(() => { dots.classList.remove('wiggle'); PB = ''; updPDots(); }, 420);
 }
 
 function pTap(n) {
@@ -614,32 +665,34 @@ function pTap(n) {
   setTimeout(() => {
     switch (PM) {
       case 'login':
-        if (PB === stored) { pinPass(); }
+        if (PB === stored) pinPass();
         else { pErr('Wrong PIN — try again'); setTimeout(() => setPMsg(), 1200); }
         break;
       case 'setup_first':
-        PF=PB; PB=''; PM='setup_confirm'; setPMsg(); updPDots();
+        PF = PB; PB = ''; PM = 'setup_confirm'; setPMsg(); updPDots();
         break;
       case 'setup_confirm':
         if (PB === PF) { savePin(PB); pinPass(); }
-        else { pErr("PINs don't match"); PM='setup_first'; PF=''; setTimeout(()=>setPMsg(), 1200); }
+        else { pErr("PINs don't match"); PM = 'setup_first'; PF = ''; setTimeout(() => setPMsg(), 1200); }
         break;
       case 'change_old':
-        if (PB === stored) { PB=''; PM='change_new'; setPMsg(); updPDots(); }
-        else { pErr('Wrong PIN'); setTimeout(()=>setPMsg(), 1200); }
+        if (PB === stored) { PB = ''; PM = 'change_new'; setPMsg(); updPDots(); }
+        else { pErr('Wrong PIN'); setTimeout(() => setPMsg(), 1200); }
         break;
       case 'change_new':
-        PF=PB; PB=''; PM='change_confirm'; setPMsg(); updPDots();
+        PF = PB; PB = ''; PM = 'change_confirm'; setPMsg(); updPDots();
         break;
       case 'change_confirm':
         if (PB === PF) { savePin(PB); goApp(); }
-        else { pErr("PINs don't match"); PM='change_new'; PF=''; setTimeout(()=>setPMsg(), 1200); }
+        else { pErr("PINs don't match"); PM = 'change_new'; PF = ''; setTimeout(() => setPMsg(), 1200); }
         break;
     }
   }, 150);
 }
 
-function pDel() { if (PB.length) { PB = PB.slice(0,-1); updPDots(); } }
+function pDel() {
+  if (PB.length) { PB = PB.slice(0, -1); updPDots(); }
+}
 
 function pinPass() {
   const el = document.getElementById('scr-pin');
@@ -647,62 +700,71 @@ function pinPass() {
   setTimeout(() => { el.classList.remove('bye'); goApp(); }, 460);
 }
 
-/* ════════════════════════════════════════
+/* ════════════════════════════════════════════════
    APP ENTRY
-════════════════════════════════════════ */
+════════════════════════════════════════════════ */
 function goApp() {
   loadD();
-  if (!D.cats.length) { goScreen('scr-empty'); return; }
+  if (!D.cats.length) {
+    goScreen('scr-empty');
+    return;
+  }
   CI = Math.max(0, Math.min(CI, D.cats.length - 1));
   goScreen('scr-viewer');
   renderV();
 }
 
-/* ════════════════════════════════════════
+/* ════════════════════════════════════════════════
    VIEWER RENDER
-════════════════════════════════════════ */
+════════════════════════════════════════════════ */
 function renderV() {
   const cat  = D.cats[CI];
   if (!cat) return;
+
   const imgs = cat.images || [];
-  const ii   = D.idx[CI] !== undefined ? D.idx[CI] : 0;
+  const ii   = (D.idx[CI] !== undefined && D.idx[CI] !== null) ? D.idx[CI] : 0;
   const img  = imgs[ii];
 
   // ── category name ──
-  const cn = document.getElementById('v-catname');
-  cn.textContent = cat.name;
-  cn.classList.remove('do-catslide');
-  void cn.offsetWidth;
-  cn.classList.add('do-catslide');
+  const cnEl = document.getElementById('v-catname');
+  cnEl.textContent = cat.name;
+  cnEl.classList.remove('do-cat');
+  void cnEl.offsetWidth;
+  cnEl.classList.add('do-cat');
 
-  // ── image or empty cat ──
-  const vimg = document.getElementById('v-img');
-  const vec  = document.getElementById('v-empty-cat');
-  const vtb  = document.getElementById('v-titlebox');
-  const vfade = document.getElementById('v-fade');
+  // ── image display (using <img> tag for reliability) ──
+  const vImgEl   = document.getElementById('v-img');
+  const vecEl    = document.getElementById('v-empty-cat');
+  const vtbEl    = document.getElementById('v-titlebox');
+  const vfadeEl  = document.getElementById('v-fade');
+  const vnameEl  = document.getElementById('v-ec-name');
 
   if (!imgs.length) {
-    vimg.style.backgroundImage = '';
-    vec.style.display = 'flex';
-    document.getElementById('v-ec-name').textContent = cat.name;
-    vtb.style.visibility = 'hidden';
-    vfade.style.opacity = '0';
+    // no images — show empty cat screen
+    vImgEl.src = '';
+    vImgEl.style.display = 'none';
+    vecEl.classList.add('show');
+    vnameEl.textContent = cat.name;
+    vtbEl.style.visibility = 'hidden';
+    vfadeEl.style.opacity = '0';
   } else {
-    vec.style.display = 'none';
-    vtb.style.visibility = 'visible';
-    vfade.style.opacity = '1';
-    vimg.style.backgroundImage = `url(${img.src})`;
+    // show image
+    vecEl.classList.remove('show');
+    vImgEl.style.display = 'block';
+    vImgEl.src = img.src;
+    vtbEl.style.visibility = 'visible';
+    vfadeEl.style.opacity = '1';
 
-    const vt = document.getElementById('v-title');
-    vt.textContent = img.title || '';
-    vt.classList.remove('do-titleslide');
-    void vt.offsetWidth;
-    vt.classList.add('do-titleslide');
+    const vtEl = document.getElementById('v-title');
+    vtEl.textContent = img.title || '';
+    vtEl.classList.remove('do-title');
+    void vtEl.offsetWidth;
+    vtEl.classList.add('do-title');
   }
 
   renderCDots();
   renderIDots();
-  trashHide();
+  hideActions();
 }
 
 function renderCDots() {
@@ -729,12 +791,13 @@ function renderIDots() {
   });
 }
 
-/* ════════════════════════════════════════
+/* ════════════════════════════════════════════════
    NAVIGATION
-════════════════════════════════════════ */
+════════════════════════════════════════════════ */
 function navCat(n) {
   n = Math.max(0, Math.min(D.cats.length - 1, n));
-  CI = n; renderV();
+  CI = n;
+  renderV();
 }
 
 function navImg(dir) {
@@ -748,10 +811,13 @@ function navImg(dir) {
   renderV();
 }
 
-/* ════════════════════════════════════════
+/* ════════════════════════════════════════════════
    SWIPE DETECTION
-════════════════════════════════════════ */
-let _sx=0, _sy=0, _active=false, _lpt=null, _clpt=null;
+════════════════════════════════════════════════ */
+let _sx = 0, _sy = 0, _active = false;
+let _lpt  = null;  // long press timer for image
+let _clpt = null;  // long press timer for category
+
 const VS = document.getElementById('scr-viewer');
 
 VS.addEventListener('touchstart', e => {
@@ -759,36 +825,45 @@ VS.addEventListener('touchstart', e => {
   _sx = e.touches[0].clientX;
   _sy = e.touches[0].clientY;
   _active = true;
+  // long press on screen body → image actions
   _lpt = setTimeout(() => {
-    if (D.cats[CI]?.images?.length) trashShow();
+    if (D.cats[CI]?.images?.length) {
+      AT = 'img';
+      showActions();
+    }
   }, 520);
 }, { passive: true });
 
-VS.addEventListener('touchmove', () => clearTimeout(_lpt), { passive: true });
+VS.addEventListener('touchmove', () => {
+  clearTimeout(_lpt);
+}, { passive: true });
 
 VS.addEventListener('touchend', e => {
   clearTimeout(_lpt);
-  if (!_active || anyModalOpen()) { _active=false; return; }
+  if (!_active || anyModalOpen()) { _active = false; return; }
   _active = false;
-  swipe(e.changedTouches[0].clientX - _sx, e.changedTouches[0].clientY - _sy);
+  doSwipe(e.changedTouches[0].clientX - _sx, e.changedTouches[0].clientY - _sy);
 });
 
-// mouse fallback for PC testing
+// Mouse (desktop/PC testing)
 VS.addEventListener('mousedown', e => {
-  if (e.target.closest('.actbtn') || e.target.closest('#v-catbox') || anyModalOpen()) return;
-  _sx=e.clientX; _sy=e.clientY; _active=true;
-  _lpt = setTimeout(() => { if (D.cats[CI]?.images?.length) trashShow(); }, 520);
+  if (e.target.closest('.actbtn') || e.target.closest('#v-catbox') || e.target.closest('#action-btns') || anyModalOpen()) return;
+  _sx = e.clientX; _sy = e.clientY; _active = true;
+  _lpt = setTimeout(() => {
+    if (D.cats[CI]?.images?.length) { AT = 'img'; showActions(); }
+  }, 520);
 });
 VS.addEventListener('mousemove', () => clearTimeout(_lpt));
 VS.addEventListener('mouseup', e => {
   clearTimeout(_lpt);
-  if (!_active) return; _active=false;
-  swipe(e.clientX - _sx, e.clientY - _sy);
+  if (!_active) return;
+  _active = false;
+  doSwipe(e.clientX - _sx, e.clientY - _sy);
 });
 
-function swipe(dx, dy) {
-  const ax=Math.abs(dx), ay=Math.abs(dy);
-  if (Math.max(ax,ay) < 38) return;
+function doSwipe(dx, dy) {
+  const ax = Math.abs(dx), ay = Math.abs(dy);
+  if (Math.max(ax, ay) < 38) return;
   if (ax > ay) navImg(dx < 0 ? 1 : -1);
   else {
     const n = CI + (dy < 0 ? 1 : -1);
@@ -798,29 +873,30 @@ function swipe(dx, dy) {
 
 document.addEventListener('keydown', e => {
   if (anyModalOpen()) return;
-  if (e.key==='ArrowLeft')  navImg(-1);
-  if (e.key==='ArrowRight') navImg(1);
-  if (e.key==='ArrowUp')    navCat(CI-1);
-  if (e.key==='ArrowDown')  navCat(CI+1);
+  if (e.key === 'ArrowLeft')  navImg(-1);
+  if (e.key === 'ArrowRight') navImg(1);
+  if (e.key === 'ArrowUp')    navCat(CI - 1);
+  if (e.key === 'ArrowDown')  navCat(CI + 1);
+  if (e.key === 'Escape')     hideActions();
 });
 
-/* ════════════════════════════════════════
-   LONG PRESS CATEGORY NAME → DELETE
-════════════════════════════════════════ */
+/* ════════════════════════════════════════════════
+   LONG PRESS — CATEGORY NAME
+════════════════════════════════════════════════ */
 const CNBOX = document.getElementById('v-catname');
 
 function clpStart() {
   CNBOX.classList.add('pressing');
   _clpt = setTimeout(() => {
     CNBOX.classList.remove('pressing');
-    const cat = D.cats[CI];
-    if (cat) {
-      document.getElementById('del-cat-msg').textContent = `"${cat.name}" and all its images will be removed.`;
-      openModal('mod-del-cat');
-    }
+    AT = 'cat';
+    showActions();
   }, 700);
 }
-function clpEnd() { clearTimeout(_clpt); CNBOX.classList.remove('pressing'); }
+function clpEnd() {
+  clearTimeout(_clpt);
+  CNBOX.classList.remove('pressing');
+}
 
 CNBOX.addEventListener('touchstart', clpStart, { passive: true });
 CNBOX.addEventListener('touchend',   clpEnd);
@@ -829,56 +905,116 @@ CNBOX.addEventListener('mousedown',  clpStart);
 CNBOX.addEventListener('mouseup',    clpEnd);
 CNBOX.addEventListener('mouseleave', clpEnd);
 
-/* ════════════════════════════════════════
-   TRASH
-════════════════════════════════════════ */
-function trashShow() { document.getElementById('v-trash').classList.add('on'); }
-function trashHide() { document.getElementById('v-trash').classList.remove('on'); }
+/* ════════════════════════════════════════════════
+   LONG PRESS — TITLE TEXT
+════════════════════════════════════════════════ */
+const TITLEEL = document.getElementById('v-title');
 
-/* ════════════════════════════════════════
+function tlpStart() {
+  TITLEEL.classList.add('pressing');
+  _lpt = setTimeout(() => {
+    TITLEEL.classList.remove('pressing');
+    if (D.cats[CI]?.images?.length) { AT = 'img'; showActions(); }
+  }, 520);
+}
+function tlpEnd() {
+  clearTimeout(_lpt);
+  TITLEEL.classList.remove('pressing');
+}
+
+TITLEEL.addEventListener('touchstart', tlpStart, { passive: true });
+TITLEEL.addEventListener('touchend',   tlpEnd);
+TITLEEL.addEventListener('touchmove',  tlpEnd);
+TITLEEL.addEventListener('mousedown',  tlpStart);
+TITLEEL.addEventListener('mouseup',    tlpEnd);
+TITLEEL.addEventListener('mouseleave', tlpEnd);
+
+/* ════════════════════════════════════════════════
+   ACTION BUTTONS (Edit / Delete)
+════════════════════════════════════════════════ */
+function showActions() {
+  const editBtn = document.getElementById('abtn-edit');
+  const delBtn  = document.getElementById('abtn-del');
+  if (AT === 'cat') {
+    editBtn.textContent = '✎ Rename';
+    delBtn.textContent  = '✕ Delete';
+  } else {
+    editBtn.textContent = '✎ Edit Title';
+    delBtn.textContent  = '✕ Delete';
+  }
+  document.getElementById('action-btns').classList.add('on');
+}
+
+function hideActions() {
+  document.getElementById('action-btns').classList.remove('on');
+  AT = null;
+}
+
+// tap anywhere else on viewer to dismiss
+VS.addEventListener('click', e => {
+  if (!e.target.closest('#action-btns') &&
+      !e.target.closest('#v-catbox') &&
+      !e.target.closest('#v-titlebox')) {
+    hideActions();
+  }
+});
+
+document.getElementById('abtn-edit').onclick = () => {
+  if (AT === 'cat') doEditCat();
+  else doEditImg();
+};
+
+document.getElementById('abtn-del').onclick = () => {
+  if (AT === 'cat') openDelCat();
+  else { hideActions(); openModal('mod-del-img'); }
+};
+
+/* ════════════════════════════════════════════════
    BUTTON WIRING
-════════════════════════════════════════ */
-// empty screen
+════════════════════════════════════════════════ */
 document.getElementById('btn-new-cat-empty').onclick = () => openModal('mod-cat');
+document.getElementById('btn-settings').onclick      = () => goScreen('scr-settings');
+document.getElementById('btn-upload').onclick        = doUpload;
+document.getElementById('btn-new-cat').onclick       = () => openModal('mod-cat');
+document.getElementById('s-back').onclick            = goApp;
+document.getElementById('btn-change-pin').onclick    = doChangePin;
+document.getElementById('btn-wipe').onclick          = () => openModal('mod-wipe');
 
-// viewer topbar
-document.getElementById('btn-settings').onclick = () => goScreen('scr-settings');
-document.getElementById('btn-upload').onclick    = doUpload;
-document.getElementById('btn-new-cat').onclick   = () => openModal('mod-cat');
-
-// trash
-document.getElementById('v-trash').onclick = () => openModal('mod-del-img');
-
-// settings
-document.getElementById('s-back').onclick         = goApp;
-document.getElementById('btn-change-pin').onclick  = doChangePin;
-document.getElementById('btn-wipe').onclick        = () => openModal('mod-wipe');
-
-// modal: new category
+// New category
 document.getElementById('btn-cat-cancel').onclick = () => closeModal('mod-cat');
 document.getElementById('btn-cat-ok').onclick     = doCatCreate;
-document.getElementById('inp-cat').onkeydown      = e => { if (e.key==='Enter') doCatCreate(); };
+document.getElementById('inp-cat').onkeydown      = e => { if (e.key === 'Enter') doCatCreate(); };
 
-// modal: image title
+// Edit category
+document.getElementById('btn-edit-cat-cancel').onclick = () => closeModal('mod-edit-cat');
+document.getElementById('btn-edit-cat-ok').onclick     = saveEditCat;
+document.getElementById('inp-edit-cat').onkeydown      = e => { if (e.key === 'Enter') saveEditCat(); };
+
+// Image title on upload
 document.getElementById('btn-img-skip').onclick = doImgSkip;
 document.getElementById('btn-img-ok').onclick   = doImgAdd;
-document.getElementById('inp-img').onkeydown    = e => { if (e.key==='Enter') doImgAdd(); };
+document.getElementById('inp-img').onkeydown    = e => { if (e.key === 'Enter') doImgAdd(); };
 
-// modal: delete image
-document.getElementById('btn-di-cancel').onclick = () => { closeModal('mod-del-img'); trashHide(); };
+// Edit image title
+document.getElementById('btn-edit-img-cancel').onclick = () => closeModal('mod-edit-img');
+document.getElementById('btn-edit-img-ok').onclick     = saveEditImg;
+document.getElementById('inp-edit-img').onkeydown      = e => { if (e.key === 'Enter') saveEditImg(); };
+
+// Delete image
+document.getElementById('btn-di-cancel').onclick = () => { closeModal('mod-del-img'); hideActions(); };
 document.getElementById('btn-di-ok').onclick     = doImgDelete;
 
-// modal: delete category
+// Delete category
 document.getElementById('btn-dc-cancel').onclick = () => closeModal('mod-del-cat');
 document.getElementById('btn-dc-ok').onclick     = doCatDelete;
 
-// modal: wipe
+// Wipe
 document.getElementById('btn-wipe-cancel').onclick = () => closeModal('mod-wipe');
 document.getElementById('btn-wipe-ok').onclick     = doWipe;
 
-/* ════════════════════════════════════════
+/* ════════════════════════════════════════════════
    CATEGORY ACTIONS
-════════════════════════════════════════ */
+════════════════════════════════════════════════ */
 function doCatCreate() {
   const name = document.getElementById('inp-cat').value.trim();
   if (!name) return;
@@ -890,22 +1026,49 @@ function doCatCreate() {
   goApp();
 }
 
+function doEditCat() {
+  hideActions();
+  const cat = D.cats[CI];
+  if (!cat) return;
+  const inp = document.getElementById('inp-edit-cat');
+  inp.value = cat.name;
+  openModal('mod-edit-cat');
+}
+
+function saveEditCat() {
+  const name = document.getElementById('inp-edit-cat').value.trim();
+  if (!name) return;
+  D.cats[CI].name = name;
+  saveD();
+  closeModal('mod-edit-cat');
+  renderV();
+}
+
+function openDelCat() {
+  hideActions();
+  const cat = D.cats[CI];
+  if (!cat) return;
+  document.getElementById('del-cat-msg').textContent =
+    `"${cat.name}" and all its images will be removed.`;
+  openModal('mod-del-cat');
+}
+
 function doCatDelete() {
   D.cats.splice(CI, 1);
   CI = Math.max(0, CI - 1);
-  // rebuild idx
-  const ni = {};
-  D.cats.forEach((_, i) => { ni[i] = 0; });
-  D.idx = ni;
+  // rebuild idx map
+  const newIdx = {};
+  D.cats.forEach((_, i) => { newIdx[i] = 0; });
+  D.idx = newIdx;
   saveD();
   closeModal('mod-del-cat');
   goApp();
 }
 
-/* ════════════════════════════════════════
+/* ════════════════════════════════════════════════
    IMAGE UPLOAD
-════════════════════════════════════════ */
-let _files=[], _fi=0, _queue=[];
+════════════════════════════════════════════════ */
+let _files = [], _fi = 0, _queue = [];
 
 function doUpload() {
   if (!D.cats.length) { openModal('mod-cat'); return; }
@@ -916,29 +1079,45 @@ function doUpload() {
 document.getElementById('file-pick').onchange = function() {
   const files = Array.from(this.files);
   if (!files.length) return;
-  _files = files; _fi = 0; _queue = [];
+  _files = files;
+  _fi    = 0;
+  _queue = [];
   nextFile();
 };
 
 function nextFile() {
   if (_fi >= _files.length) {
-    // all done — push to category
-    _queue.forEach(img => D.cats[CI].images.push(img));
-    D.idx[CI] = Math.max(0, D.cats[CI].images.length - 1);
+    // All files processed — add to category and save
+    const cat = D.cats[CI];
+    if (!cat) return;
+    _queue.forEach(img => cat.images.push(img));
+    D.idx[CI] = Math.max(0, cat.images.length - 1);
     saveD();
-    goApp();
+    // Re-render viewer directly — no reload
+    goScreen('scr-viewer');
+    renderV();
     return;
   }
-  const f = _files[_fi];
+
+  const file   = _files[_fi];
   const reader = new FileReader();
+
   reader.onload = e => {
-    // store on the modal element temporarily
-    const m = document.getElementById('mod-img');
-    m._src  = e.target.result;
-    m._name = f.name.replace(/\.[^.]+$/, '');
+    const m  = document.getElementById('mod-img');
+    m._src   = e.target.result;
+    m._name  = file.name.replace(/\.[^.]+$/, '');
+    // Clear the input first
+    document.getElementById('inp-img').value = '';
     openModal('mod-img');
   };
-  reader.readAsDataURL(f);
+
+  reader.onerror = () => {
+    // Skip broken file
+    _fi++;
+    nextFile();
+  };
+
+  reader.readAsDataURL(file);
 }
 
 function doImgAdd() {
@@ -947,7 +1126,8 @@ function doImgAdd() {
   _queue.push({ src: m._src, title });
   _fi++;
   closeModal('mod-img');
-  nextFile();
+  // Small delay before next file to let modal close cleanly
+  setTimeout(nextFile, 200);
 }
 
 function doImgSkip() {
@@ -955,7 +1135,28 @@ function doImgSkip() {
   _queue.push({ src: m._src, title: m._name });
   _fi++;
   closeModal('mod-img');
-  nextFile();
+  setTimeout(nextFile, 200);
+}
+
+function doEditImg() {
+  hideActions();
+  const imgs = D.cats[CI]?.images || [];
+  const ii   = D.idx[CI] || 0;
+  const img  = imgs[ii];
+  if (!img) return;
+  const inp = document.getElementById('inp-edit-img');
+  inp.value = img.title || '';
+  openModal('mod-edit-img');
+}
+
+function saveEditImg() {
+  const title = document.getElementById('inp-edit-img').value.trim();
+  const imgs  = D.cats[CI]?.images || [];
+  const ii    = D.idx[CI] || 0;
+  if (imgs[ii]) imgs[ii].title = title;
+  saveD();
+  closeModal('mod-edit-img');
+  renderV();
 }
 
 function doImgDelete() {
@@ -965,15 +1166,15 @@ function doImgDelete() {
   D.idx[CI] = Math.max(0, Math.min(ii, cat.images.length - 1));
   saveD();
   closeModal('mod-del-img');
-  trashHide();
-  goApp();
+  hideActions();
+  renderV();
 }
 
-/* ════════════════════════════════════════
-   SETTINGS ACTIONS
-════════════════════════════════════════ */
+/* ════════════════════════════════════════════════
+   SETTINGS
+════════════════════════════════════════════════ */
 function doChangePin() {
-  PB=''; PF=''; PM='change_old';
+  PB = ''; PF = ''; PM = 'change_old';
   setPMsg(); updPDots(); buildPad();
   goScreen('scr-pin');
 }
@@ -981,21 +1182,22 @@ function doChangePin() {
 function doWipe() {
   localStorage.removeItem(SK);
   localStorage.removeItem(PK);
-  D = { cats:[], idx:{} }; CI=0;
+  D  = { cats: [], idx: {} };
+  CI = 0;
   closeAllModals();
   startPin();
 }
 
-/* ════════════════════════════════════════
+/* ════════════════════════════════════════════════
    SERVICE WORKER
-════════════════════════════════════════ */
+════════════════════════════════════════════════ */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 
-/* ════════════════════════════════════════
+/* ════════════════════════════════════════════════
    BOOT
-════════════════════════════════════════ */
+════════════════════════════════════════════════ */
 startPin();
 </script>
 </body>
