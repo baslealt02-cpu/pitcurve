@@ -13,379 +13,156 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after {
-  margin: 0; padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
 :root {
-  --bg: #090909;
-  --red: #E8372A;
-  --text: #F4EFE6;
-  --dim: rgba(244,239,230,0.42);
-  --dimmer: rgba(244,239,230,0.12);
-  --glass: rgba(6,6,6,0.72);
-  --border: rgba(255,255,255,0.09);
+  --bg:#090909; --red:#E8372A;
+  --text:#F4EFE6; --dim:rgba(244,239,230,0.42);
+  --dimmer:rgba(244,239,230,0.12);
+  --glass:rgba(6,6,6,0.72); --border:rgba(255,255,255,0.09);
 }
 
-html, body {
-  width: 100%; height: 100%;
-  overflow: hidden;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'DM Mono', monospace;
-  user-select: none;
-  -webkit-user-select: none;
-}
+html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'DM Mono',monospace; user-select:none; -webkit-user-select:none; }
 
-/* ─── SCREENS ─── */
-.screen {
-  position: fixed;
-  inset: 0;
-  display: none;
-}
-.screen.on { display: block; }
+.screen { position:fixed; inset:0; display:none; }
+.screen.on { display:block; }
 
-/* ══════════════════════════════
-   PIN SCREEN
-══════════════════════════════ */
-#scr-pin {
-  background: var(--bg);
-  z-index: 200;
-  transition: opacity .45s ease, transform .45s ease;
-}
-#scr-pin.bye { opacity: 0; transform: scale(1.06); pointer-events: none; }
+/* ── PIN ── */
+#scr-pin { background:var(--bg); z-index:200; transition:opacity .45s,transform .45s; }
+#scr-pin.bye { opacity:0; transform:scale(1.06); pointer-events:none; }
+#pin-inner { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; }
+.logo { font-size:44px; letter-spacing:.08em; margin-bottom:5px; line-height:1; }
+.logo em { color:var(--red); font-style:normal; }
+.logo-sub { font-size:9px; letter-spacing:.32em; text-transform:uppercase; color:var(--dim); margin-bottom:48px; }
+.pin-dots { display:flex; gap:16px; margin-bottom:44px; }
+.pd { width:13px; height:13px; border-radius:50%; border:2px solid var(--dimmer); transition:all .18s; }
+.pd.lit { background:var(--red); border-color:var(--red); transform:scale(1.15); }
+.pin-msg { font-size:9px; letter-spacing:.28em; text-transform:uppercase; color:var(--dim); margin-bottom:20px; min-height:14px; }
+.pin-msg.bad { color:var(--red); }
+@keyframes wiggle { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+.pin-dots.wiggle { animation:wiggle .38s ease; }
+.numpad { display:grid; grid-template-columns:repeat(3,74px); gap:10px; }
+.nk { height:64px; border-radius:50%; border:1px solid var(--border); background:rgba(255,255,255,0.035); color:var(--text); font-family:'DM Mono',monospace; font-size:23px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .12s; }
+.nk:active { background:rgba(232,55,42,.15); border-color:var(--red); transform:scale(.9); }
+.nk.ghost { background:transparent; border:none; pointer-events:none; }
+.nk.back { font-size:16px; color:var(--dim); }
 
-#pin-inner {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex; flex-direction: column;
-  align-items: center;
-}
+/* ── EMPTY ── */
+#scr-empty { background:var(--bg); z-index:10; }
+#empty-inner { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; }
+.big-logo { font-size:54px; letter-spacing:.08em; }
+.big-logo em { color:var(--red); font-style:normal; }
+.big-sub { font-size:9px; letter-spacing:.3em; text-transform:uppercase; color:var(--dim); margin-bottom:32px; }
+.redbtn { padding:14px 36px; background:var(--red); border:none; color:#fff; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; cursor:pointer; }
+.redbtn:active { opacity:.78; }
 
-.logo { font-size: 44px; letter-spacing: .08em; margin-bottom: 5px; line-height: 1; }
-.logo em { color: var(--red); font-style: normal; }
-.logo-sub { font-size: 9px; letter-spacing: .32em; text-transform: uppercase; color: var(--dim); margin-bottom: 48px; }
+/* ── VIEWER ── */
+#scr-viewer { background:#000; z-index:5; }
+#v-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; z-index:1; }
+#v-fade { position:absolute; inset:0; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(0,0,0,.82) 0%, rgba(0,0,0,.14) 20%, transparent 38%, transparent 55%, rgba(0,0,0,.2) 72%, rgba(0,0,0,.90) 100%); }
 
-.pin-dots { display: flex; gap: 16px; margin-bottom: 44px; }
-.pd { width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--dimmer); transition: all .18s; }
-.pd.lit { background: var(--red); border-color: var(--red); transform: scale(1.15); }
+#v-empty-cat { position:absolute; inset:0; z-index:4; display:none; flex-direction:column; align-items:center; justify-content:center; gap:12px; background:#0b0b0b; }
+#v-empty-cat.show { display:flex; }
+.ec-name { font-family:'Great Vibes',cursive; font-size:clamp(34px,8vw,52px); color:var(--dim); }
+.ec-hint { font-size:9px; letter-spacing:.28em; text-transform:uppercase; color:var(--dimmer); }
 
-.pin-msg { font-size: 9px; letter-spacing: .28em; text-transform: uppercase; color: var(--dim); margin-bottom: 20px; min-height: 14px; }
-.pin-msg.bad { color: var(--red); }
+/* category name — top LEFT away from buttons */
+#v-catbox { position:absolute; top:calc(env(safe-area-inset-top,0px) + 14px); left:18px; right:155px; z-index:10; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#v-catname { display:inline-block; font-family:'Great Vibes',cursive; font-size:clamp(38px,8.5vw,62px); font-weight:400; color:var(--text); -webkit-text-stroke:0.5px rgba(0,0,0,0.85); text-shadow: 0 0 12px rgba(0,0,0,0.9), 0 0 28px rgba(0,0,0,0.7), 1px 1px 0 rgba(0,0,0,0.6), -1px -1px 0 rgba(0,0,0,0.6); transition:opacity .2s; cursor:default; }
+#v-catname.pressing { opacity:0.5; }
 
-@keyframes wiggle {
-  0%,100% { transform: translateX(0); }
-  20% { transform: translateX(-8px); }
-  40% { transform: translateX(8px); }
-  60% { transform: translateX(-5px); }
-  80% { transform: translateX(5px); }
-}
-.pin-dots.wiggle { animation: wiggle .38s ease; }
+@keyframes catSlide { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes titleSlide { from{opacity:0;transform:translateY(14px);filter:blur(3px)} to{opacity:1;transform:none;filter:none} }
+.do-cat { animation:catSlide .45s cubic-bezier(.22,1,.36,1) both; }
+.do-title { animation:titleSlide .5s cubic-bezier(.22,1,.36,1) both; }
 
-.numpad { display: grid; grid-template-columns: repeat(3, 74px); gap: 10px; }
-.nk {
-  height: 64px; border-radius: 50%;
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.035);
-  color: var(--text); font-family: 'DM Mono', monospace;
-  font-size: 23px; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all .12s;
-}
-.nk:active { background: rgba(232,55,42,.15); border-color: var(--red); transform: scale(.9); }
-.nk.ghost { background: transparent; border: none; pointer-events: none; }
-.nk.back { font-size: 16px; color: var(--dim); }
+/* title — bottom */
+#v-titlebox { position:absolute; bottom:calc(env(safe-area-inset-bottom,0px) + 72px); left:22px; right:76px; z-index:10; }
+#v-title { font-family:'Great Vibes',cursive; font-size:clamp(28px,6vw,44px); font-weight:400; color:rgba(244,239,230,.92); -webkit-text-stroke:0.4px rgba(0,0,0,0.8); text-shadow: 0 0 10px rgba(0,0,0,0.95), 0 0 24px rgba(0,0,0,0.8), 1px 1px 0 rgba(0,0,0,0.5), -1px -1px 0 rgba(0,0,0,0.5); line-height:1.3; }
+#v-title.pressing { opacity:0.5; }
 
-/* ══════════════════════════════
-   EMPTY SCREEN
-══════════════════════════════ */
-#scr-empty { background: var(--bg); z-index: 10; }
-#empty-inner {
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex; flex-direction: column;
-  align-items: center; gap: 10px; text-align: center;
-}
-.big-logo { font-size: 54px; letter-spacing: .08em; }
-.big-logo em { color: var(--red); font-style: normal; }
-.big-sub { font-size: 9px; letter-spacing: .3em; text-transform: uppercase; color: var(--dim); margin-bottom: 32px; }
-.redbtn {
-  padding: 14px 36px; background: var(--red); border: none;
-  color: #fff; font-family: 'DM Mono', monospace;
-  font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
-  cursor: pointer; transition: opacity .2s;
-}
-.redbtn:active { opacity: .78; }
+/* topbar */
+#v-topbar { position:absolute; top:calc(env(safe-area-inset-top,0px) + 10px); right:0; z-index:20; display:flex; gap:10px; padding:8px 13px 0 0; }
+.actbtn { width:40px; height:40px; border-radius:50%; background:var(--glass); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border); color:var(--text); font-size:17px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .16s; }
+.actbtn:active { border-color:var(--red); color:var(--red); transform:scale(.88); }
 
-/* ══════════════════════════════
-   VIEWER SCREEN
-══════════════════════════════ */
-#scr-viewer { background: #000; z-index: 5; }
+/* dots */
+#v-catdots { position:absolute; left:9px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:7px; align-items:center; z-index:10; }
+.cdot { width:3px; height:4px; border-radius:2px; background:var(--dimmer); transition:all .28s; cursor:pointer; }
+.cdot.on { background:var(--red); height:17px; }
+#v-imgdots { position:absolute; bottom:calc(env(safe-area-inset-bottom,0px) + 44px); left:50%; transform:translateX(-50%); display:flex; gap:5px; align-items:center; z-index:10; }
+.idot { width:4px; height:4px; border-radius:2px; background:var(--dimmer); transition:all .28s; }
+.idot.on { background:var(--text); width:15px; }
 
-/* Full screen image using <img> tag for reliability */
-#v-img {
-  position: absolute;
-  inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-  z-index: 1;
-}
+/* action buttons */
+#action-btns { position:absolute; bottom:calc(env(safe-area-inset-bottom,0px) + 130px); left:50%; display:flex; gap:12px; z-index:30; opacity:0; pointer-events:none; transform:translateX(-50%) translateY(20px) scale(0.85); transition:opacity .28s ease, transform .28s cubic-bezier(.34,1.56,.64,1); }
+#action-btns.on { opacity:1; pointer-events:all; transform:translateX(-50%) translateY(0) scale(1); }
+.abtn { padding:12px 24px; font-family:'DM Mono',monospace; font-size:13px; letter-spacing:.06em; cursor:pointer; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border); transition:all .15s; border-radius:4px; }
+.abtn:active { transform:scale(.95); opacity:.8; }
+.abtn.edit { background:rgba(244,239,230,0.12); color:var(--text); border-color:rgba(244,239,230,0.25); }
+.abtn.del  { background:rgba(232,55,42,0.18); color:var(--red); border-color:rgba(232,55,42,0.4); }
 
-/* Cinematic fade */
-#v-fade {
-  position: absolute; inset: 0;
-  pointer-events: none; z-index: 2;
-  background: linear-gradient(
-    to bottom,
-    rgba(0,0,0,.82) 0%,
-    rgba(0,0,0,.14) 20%,
-    transparent 38%,
-    transparent 55%,
-    rgba(0,0,0,.2) 72%,
-    rgba(0,0,0,.90) 100%
-  );
-}
+/* ── SETTINGS ── */
+#scr-settings { background:var(--bg); z-index:50; }
+#settings-inner { padding:calc(env(safe-area-inset-top,0px) + 62px) 24px 0; }
+.s-title { font-family:'Great Vibes',cursive; font-size:42px; margin-bottom:4px; }
+.s-sub { font-size:9px; letter-spacing:.28em; text-transform:uppercase; color:var(--dim); margin-bottom:34px; }
+.s-row { padding:16px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
+.s-row:active { opacity:.6; }
+.s-lbl { font-size:10px; letter-spacing:.1em; text-transform:uppercase; }
+.s-hint { font-size:9px; color:var(--dim); margin-top:2px; }
+.s-arr { color:var(--red); font-size:16px; }
+#s-back { position:absolute; top:calc(env(safe-area-inset-top,0px) + 12px); left:12px; width:40px; height:40px; border-radius:50%; background:var(--glass); border:1px solid var(--border); color:var(--text); font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+#s-back:active { border-color:var(--red); }
 
-/* Empty category state */
-#v-empty-cat {
-  position: absolute; inset: 0; z-index: 4;
-  display: none;
-  flex-direction: column; align-items: center; justify-content: center;
-  gap: 12px; background: #0b0b0b;
-}
-#v-empty-cat.show { display: flex; }
-.ec-name {
-  font-family: 'Great Vibes', cursive;
-  font-size: clamp(34px, 8vw, 52px); color: var(--dim);
-}
-.ec-hint { font-size: 9px; letter-spacing: .28em; text-transform: uppercase; color: var(--dimmer); }
+/* ── LOADING OVERLAY ── */
+#loading { position:fixed; inset:0; background:var(--bg); z-index:999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; transition:opacity .4s; }
+#loading.hide { opacity:0; pointer-events:none; }
+.load-logo { font-size:44px; letter-spacing:.08em; }
+.load-logo em { color:var(--red); font-style:normal; }
+.load-spinner { width:24px; height:24px; border:2px solid var(--dimmer); border-top-color:var(--red); border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
 
-/* Category name — top */
-#v-catbox {
-  position: absolute;
-  top: calc(env(safe-area-inset-top, 0px) + 14px);
-  left: 50%; transform: translateX(-50%);
-  z-index: 10; max-width: 86vw;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  text-align: center;
-}
-#v-catname {
-  display: inline-block;
-  font-family: 'Great Vibes', cursive;
-  font-size: clamp(42px, 9vw, 68px);
-  font-weight: 400; color: var(--text);
-  -webkit-text-stroke: 0.5px rgba(0,0,0,0.85);
-  text-shadow:
-    0 0 12px rgba(0,0,0,0.9),
-    0 0 28px rgba(0,0,0,0.7),
-    1px 1px 0 rgba(0,0,0,0.6),
-    -1px -1px 0 rgba(0,0,0,0.6);
-  transition: opacity .2s;
-  cursor: default;
-}
-#v-catname.pressing { opacity: 0.5; }
+/* ── MODALS ── */
+.modal { position:fixed; inset:0; background:rgba(0,0,0,.80); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); display:flex; align-items:flex-end; justify-content:center; z-index:500; opacity:0; pointer-events:none; transition:opacity .28s; }
+.modal.on { opacity:1; pointer-events:all; }
+.sheet { background:#141414; border:1px solid var(--border); border-bottom:none; width:100%; max-width:520px; padding:0 24px calc(env(safe-area-inset-bottom,0px) + 32px); transform:translateY(110%); transition:transform .36s cubic-bezier(.22,1,.36,1); }
+.modal.on .sheet { transform:translateY(0); }
+.drag-bar { width:32px; height:3px; border-radius:2px; background:var(--dimmer); margin:13px auto 26px; }
+.m-tag { font-size:9px; letter-spacing:.3em; text-transform:uppercase; color:var(--red); margin-bottom:14px; }
+.sheet input[type="text"] { width:100%; background:transparent; border:none; border-bottom:1px solid var(--border); color:var(--text); font-family:'Great Vibes',cursive; font-size:30px; padding:4px 0 12px; outline:none; transition:border-color .2s; }
+.sheet input[type="text"]:focus { border-bottom-color:var(--red); }
+.sheet input[type="text"]::placeholder { color:var(--dimmer); font-family:'DM Mono',monospace; font-size:12px; }
+.m-btns { display:flex; gap:9px; margin-top:20px; }
+.mbtn { flex:1; padding:13px; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--dim); font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.16em; text-transform:uppercase; }
+.mbtn:active { opacity:.7; }
+.mbtn.go { background:var(--red); border-color:var(--red); color:#fff; }
+.m-conf-title { font-family:'Great Vibes',cursive; font-size:32px; color:var(--text); margin-bottom:7px; }
+.m-conf-body  { font-size:10px; color:var(--dim); line-height:1.7; margin-bottom:20px; }
 
-@keyframes catSlide {
-  from { opacity: 0; transform: translateY(-10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes titleSlide {
-  from { opacity: 0; transform: translateY(14px); filter: blur(3px); }
-  to   { opacity: 1; transform: none; filter: none; }
-}
-.do-cat   { animation: catSlide .45s cubic-bezier(.22,1,.36,1) both; }
-.do-title { animation: titleSlide .5s cubic-bezier(.22,1,.36,1) both; }
-
-/* Image title — bottom */
-#v-titlebox {
-  position: absolute;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 72px);
-  left: 22px; right: 76px;
-  z-index: 10;
-}
-#v-title {
-  font-family: 'Great Vibes', cursive;
-  font-size: clamp(28px, 6vw, 44px);
-  font-weight: 400; color: rgba(244,239,230,.92);
-  -webkit-text-stroke: 0.4px rgba(0,0,0,0.8);
-  text-shadow:
-    0 0 10px rgba(0,0,0,0.95),
-    0 0 24px rgba(0,0,0,0.8),
-    1px 1px 0 rgba(0,0,0,0.5),
-    -1px -1px 0 rgba(0,0,0,0.5);
-  line-height: 1.3;
-}
-#v-title.pressing { opacity: 0.5; }
-
-/* Top action buttons */
-#v-topbar {
-  position: absolute;
-  top: calc(env(safe-area-inset-top, 0px) + 10px);
-  right: 0; z-index: 20;
-  display: flex; gap: 10px; padding: 8px 13px 0 0;
-}
-.actbtn {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: var(--glass);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border);
-  color: var(--text); font-size: 17px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all .16s;
-}
-.actbtn:active { border-color: var(--red); color: var(--red); transform: scale(.88); }
-
-/* Category side dots */
-#v-catdots {
-  position: absolute; left: 9px; top: 50%;
-  transform: translateY(-50%);
-  display: flex; flex-direction: column; gap: 7px;
-  align-items: center; z-index: 10;
-}
-.cdot { width: 3px; height: 4px; border-radius: 2px; background: var(--dimmer); transition: all .28s; cursor: pointer; }
-.cdot.on { background: var(--red); height: 17px; }
-
-/* Image bottom dots */
-#v-imgdots {
-  position: absolute;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 44px);
-  left: 50%; transform: translateX(-50%);
-  display: flex; gap: 5px; align-items: center; z-index: 10;
-}
-.idot { width: 4px; height: 4px; border-radius: 2px; background: var(--dimmer); transition: all .28s; }
-.idot.on { background: var(--text); width: 15px; }
-
-/* Edit / Delete action buttons */
-#action-btns {
-  position: absolute;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 130px);
-  left: 50%;
-  display: flex; gap: 12px; z-index: 30;
-  opacity: 0; pointer-events: none;
-  /* Single transform — no duplicate */
-  transform: translateX(-50%) translateY(20px) scale(0.85);
-  transition: opacity .28s ease, transform .28s cubic-bezier(.34,1.56,.64,1);
-}
-#action-btns.on {
-  opacity: 1; pointer-events: all;
-  transform: translateX(-50%) translateY(0) scale(1);
-}
-.abtn {
-  padding: 12px 28px;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
-  cursor: pointer;
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border);
-  transition: all .15s;
-}
-.abtn:active { transform: scale(.95); opacity: .8; }
-.abtn.edit { background: rgba(244,239,230,0.1); color: var(--text); border-color: rgba(244,239,230,0.25); }
-.abtn.del  { background: rgba(232,55,42,0.15); color: var(--red); border-color: rgba(232,55,42,0.35); }
-
-/* ══════════════════════════════
-   SETTINGS SCREEN
-══════════════════════════════ */
-#scr-settings { background: var(--bg); z-index: 50; }
-#settings-inner { padding: calc(env(safe-area-inset-top,0px) + 62px) 24px 0; }
-.s-title { font-family: 'Great Vibes', cursive; font-size: 42px; margin-bottom: 4px; }
-.s-sub { font-size: 9px; letter-spacing: .28em; text-transform: uppercase; color: var(--dim); margin-bottom: 34px; }
-.s-row {
-  padding: 16px 0; border-bottom: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center; cursor: pointer;
-}
-.s-row:active { opacity: .6; }
-.s-lbl { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
-.s-hint { font-size: 9px; color: var(--dim); margin-top: 2px; }
-.s-arr { color: var(--red); font-size: 16px; }
-#s-back {
-  position: absolute;
-  top: calc(env(safe-area-inset-top,0px) + 12px); left: 12px;
-  width: 40px; height: 40px; border-radius: 50%;
-  background: var(--glass); border: 1px solid var(--border);
-  color: var(--text); font-size: 15px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-#s-back:active { border-color: var(--red); }
-
-/* ══════════════════════════════
-   MODALS — bottom sheets
-══════════════════════════════ */
-.modal {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.80);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  display: flex; align-items: flex-end; justify-content: center;
-  z-index: 500;
-  opacity: 0; pointer-events: none;
-  transition: opacity .28s ease;
-}
-.modal.on { opacity: 1; pointer-events: all; }
-
-.sheet {
-  background: #141414;
-  border: 1px solid var(--border); border-bottom: none;
-  width: 100%; max-width: 520px;
-  padding: 0 24px calc(env(safe-area-inset-bottom,0px) + 32px);
-  transform: translateY(110%);
-  transition: transform .36s cubic-bezier(.22,1,.36,1);
-}
-.modal.on .sheet { transform: translateY(0); }
-
-.drag-bar { width: 32px; height: 3px; border-radius: 2px; background: var(--dimmer); margin: 13px auto 26px; }
-.m-tag { font-size: 9px; letter-spacing: .3em; text-transform: uppercase; color: var(--red); margin-bottom: 14px; }
-
-.sheet input[type="text"] {
-  width: 100%; background: transparent;
-  border: none; border-bottom: 1px solid var(--border);
-  color: var(--text);
-  font-family: 'Great Vibes', cursive;
-  font-size: 32px;
-  padding: 4px 0 12px; outline: none;
-  transition: border-color .2s;
-  /* prevent zoom on mobile */
-  font-size: max(32px, 16px);
-}
-.sheet input[type="text"]:focus { border-bottom-color: var(--red); }
-.sheet input[type="text"]::placeholder { color: var(--dimmer); font-family: 'DM Mono', monospace; font-size: 13px; }
-
-.m-btns { display: flex; gap: 9px; margin-top: 20px; }
-.mbtn {
-  flex: 1; padding: 13px; cursor: pointer;
-  border: 1px solid var(--border); background: transparent;
-  color: var(--dim); font-family: 'DM Mono', monospace;
-  font-size: 9px; letter-spacing: .16em; text-transform: uppercase;
-  transition: opacity .15s;
-}
-.mbtn:active { opacity: .7; }
-.mbtn.go { background: var(--red); border-color: var(--red); color: #fff; }
-
-.m-conf-title { font-family: 'Great Vibes', cursive; font-size: 32px; color: var(--text); margin-bottom: 7px; }
-.m-conf-body  { font-size: 10px; color: var(--dim); line-height: 1.7; margin-bottom: 20px; }
-
-#file-pick { display: none; }
+#file-pick { display:none; }
 </style>
 </head>
 <body>
 
-<!-- ══ PIN ══ -->
+<!-- Loading -->
+<div id="loading">
+  <div class="load-logo">Pit<em>Curve</em></div>
+  <div class="load-spinner"></div>
+</div>
+
+<!-- PIN -->
 <div class="screen" id="scr-pin">
   <div id="pin-inner">
     <div class="logo">Pit<em>Curve</em></div>
     <div class="logo-sub">Personal Image Library</div>
-    <div class="pin-dots" id="pin-dots">
-      <div class="pd"></div><div class="pd"></div>
-      <div class="pd"></div><div class="pd"></div>
-    </div>
+    <div class="pin-dots" id="pin-dots"><div class="pd"></div><div class="pd"></div><div class="pd"></div><div class="pd"></div></div>
     <div class="pin-msg" id="pin-msg">Enter PIN</div>
     <div class="numpad" id="numpad"></div>
   </div>
 </div>
 
-<!-- ══ EMPTY ══ -->
+<!-- EMPTY -->
 <div class="screen" id="scr-empty">
   <div id="empty-inner">
     <div class="big-logo">Pit<em>Curve</em></div>
@@ -394,15 +171,11 @@ html, body {
   </div>
 </div>
 
-<!-- ══ VIEWER ══ -->
+<!-- VIEWER -->
 <div class="screen" id="scr-viewer">
-  <!-- Using <img> tag instead of background-image for reliable rendering -->
   <img id="v-img" src="" alt="">
   <div id="v-fade"></div>
-  <div id="v-empty-cat">
-    <div class="ec-name" id="v-ec-name"></div>
-    <div class="ec-hint">Tap ＋ to add images</div>
-  </div>
+  <div id="v-empty-cat"><div class="ec-name" id="v-ec-name"></div><div class="ec-hint">Tap ＋ to add images</div></div>
   <div id="v-catbox"><div id="v-catname"></div></div>
   <div id="v-titlebox"><div id="v-title"></div></div>
   <div id="v-topbar">
@@ -413,792 +186,563 @@ html, body {
   <div id="v-catdots"></div>
   <div id="v-imgdots"></div>
   <div id="action-btns">
-    <button class="abtn edit" id="abtn-edit">✎ Edit</button>
-    <button class="abtn del"  id="abtn-del">✕ Delete</button>
+    <button class="abtn edit" id="abtn-edit">✒️ Edit</button>
+    <button class="abtn del"  id="abtn-del">🗑 Delete</button>
   </div>
 </div>
 
-<!-- ══ SETTINGS ══ -->
+<!-- SETTINGS -->
 <div class="screen" id="scr-settings">
   <div id="s-back">←</div>
   <div id="settings-inner">
     <div class="s-title">Settings</div>
     <div class="s-sub">PitCurve · Personal</div>
-    <div class="s-row" id="btn-change-pin">
-      <div><div class="s-lbl">Change PIN</div><div class="s-hint">Update your 4-digit code</div></div>
-      <div class="s-arr">→</div>
-    </div>
-    <div class="s-row" id="btn-wipe">
-      <div><div class="s-lbl" style="color:var(--red)">Clear All Data</div><div class="s-hint">Wipe everything</div></div>
-      <div class="s-arr">→</div>
-    </div>
+    <div class="s-row" id="btn-change-pin"><div><div class="s-lbl">Change PIN</div><div class="s-hint">Update your 4-digit code</div></div><div class="s-arr">→</div></div>
+    <div class="s-row" id="btn-wipe"><div><div class="s-lbl" style="color:var(--red)">Clear All Data</div><div class="s-hint">Wipe everything</div></div><div class="s-arr">→</div></div>
   </div>
 </div>
 
-<!-- MODAL: New Category -->
-<div class="modal" id="mod-cat">
-  <div class="sheet"><div class="drag-bar"></div>
-    <div class="m-tag">New Category</div>
-    <input type="text" id="inp-cat" placeholder="e.g. Architecture…" maxlength="30" autocomplete="off">
-    <div class="m-btns">
-      <button class="mbtn" id="btn-cat-cancel">Cancel</button>
-      <button class="mbtn go" id="btn-cat-ok">Create</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: Edit Category Name -->
-<div class="modal" id="mod-edit-cat">
-  <div class="sheet"><div class="drag-bar"></div>
-    <div class="m-tag">Rename Category</div>
-    <input type="text" id="inp-edit-cat" maxlength="30" autocomplete="off">
-    <div class="m-btns">
-      <button class="mbtn" id="btn-edit-cat-cancel">Cancel</button>
-      <button class="mbtn go" id="btn-edit-cat-ok">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: Image Title on Upload -->
-<div class="modal" id="mod-img">
-  <div class="sheet"><div class="drag-bar"></div>
-    <div class="m-tag">Image Title</div>
-    <input type="text" id="inp-img" placeholder="Give this image a title…" maxlength="80" autocomplete="off">
-    <div class="m-btns">
-      <button class="mbtn" id="btn-img-skip">Skip</button>
-      <button class="mbtn go" id="btn-img-ok">Add</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: Edit Image Title -->
-<div class="modal" id="mod-edit-img">
-  <div class="sheet"><div class="drag-bar"></div>
-    <div class="m-tag">Edit Title</div>
-    <input type="text" id="inp-edit-img" maxlength="80" autocomplete="off">
-    <div class="m-btns">
-      <button class="mbtn" id="btn-edit-img-cancel">Cancel</button>
-      <button class="mbtn go" id="btn-edit-img-ok">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: Confirm Delete Image -->
-<div class="modal" id="mod-del-img">
-  <div class="sheet"><div class="drag-bar"></div>
-    <div class="m-conf-title">Delete Image?</div>
-    <div class="m-conf-body">Removed from PitCurve only. Your original file stays safe.</div>
-    <div class="m-btns">
-      <button class="mbtn" id="btn-di-cancel">Cancel</button>
-      <button class="mbtn go" id="btn-di-ok">Delete</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: Confirm Delete Category -->
-<div class="modal" id="mod-del-cat">
-  <div class="sheet"><div class="drag-bar"></div>
-    <div class="m-conf-title">Delete Category?</div>
-    <div class="m-conf-body" id="del-cat-msg">All images will be removed.</div>
-    <div class="m-btns">
-      <button class="mbtn" id="btn-dc-cancel">Cancel</button>
-      <button class="mbtn go" id="btn-dc-ok">Delete</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: Wipe Everything -->
-<div class="modal" id="mod-wipe">
-  <div class="sheet"><div class="drag-bar"></div>
-    <div class="m-conf-title">Clear Everything?</div>
-    <div class="m-conf-body">All categories, images and your PIN will be wiped. Cannot be undone.</div>
-    <div class="m-btns">
-      <button class="mbtn" id="btn-wipe-cancel">Cancel</button>
-      <button class="mbtn go" id="btn-wipe-ok">Clear All</button>
-    </div>
-  </div>
-</div>
+<!-- MODALS -->
+<div class="modal" id="mod-cat"><div class="sheet"><div class="drag-bar"></div><div class="m-tag">New Category</div><input type="text" id="inp-cat" placeholder="e.g. Architecture…" maxlength="30" autocomplete="off"><div class="m-btns"><button class="mbtn" id="btn-cat-cancel">Cancel</button><button class="mbtn go" id="btn-cat-ok">Create</button></div></div></div>
+<div class="modal" id="mod-edit-cat"><div class="sheet"><div class="drag-bar"></div><div class="m-tag">Rename Category</div><input type="text" id="inp-edit-cat" maxlength="30" autocomplete="off"><div class="m-btns"><button class="mbtn" id="btn-edit-cat-cancel">Cancel</button><button class="mbtn go" id="btn-edit-cat-ok">Save</button></div></div></div>
+<div class="modal" id="mod-img"><div class="sheet"><div class="drag-bar"></div><div class="m-tag">Image Title</div><input type="text" id="inp-img" placeholder="Give this image a title…" maxlength="80" autocomplete="off"><div class="m-btns"><button class="mbtn" id="btn-img-skip">Skip</button><button class="mbtn go" id="btn-img-ok">Add</button></div></div></div>
+<div class="modal" id="mod-edit-img"><div class="sheet"><div class="drag-bar"></div><div class="m-tag">Edit Title</div><input type="text" id="inp-edit-img" maxlength="80" autocomplete="off"><div class="m-btns"><button class="mbtn" id="btn-edit-img-cancel">Cancel</button><button class="mbtn go" id="btn-edit-img-ok">Save</button></div></div></div>
+<div class="modal" id="mod-del-img"><div class="sheet"><div class="drag-bar"></div><div class="m-conf-title">Delete Image?</div><div class="m-conf-body">Removed from PitCurve only. Your original file stays safe.</div><div class="m-btns"><button class="mbtn" id="btn-di-cancel">Cancel</button><button class="mbtn go" id="btn-di-ok">Delete</button></div></div></div>
+<div class="modal" id="mod-del-cat"><div class="sheet"><div class="drag-bar"></div><div class="m-conf-title">Delete Category?</div><div class="m-conf-body" id="del-cat-msg">All images will be removed.</div><div class="m-btns"><button class="mbtn" id="btn-dc-cancel">Cancel</button><button class="mbtn go" id="btn-dc-ok">Delete</button></div></div></div>
+<div class="modal" id="mod-wipe"><div class="sheet"><div class="drag-bar"></div><div class="m-conf-title">Clear Everything?</div><div class="m-conf-body">All categories, images and your PIN will be wiped. Cannot be undone.</div><div class="m-btns"><button class="mbtn" id="btn-wipe-cancel">Cancel</button><button class="mbtn go" id="btn-wipe-ok">Clear All</button></div></div></div>
 
 <input type="file" id="file-pick" accept="image/*" multiple>
 
 <script>
-/* ════════════════════════════════════════════════
-   STORAGE
-   Key: pitcurve_v2 — same as before so all data preserved
-════════════════════════════════════════════════ */
-const SK = 'pitcurve_v2';
-const PK = 'pc_pin';
+'use strict';
+
+/* ══════════════════════════════════════════════════
+   INDEXEDDB — unlimited image storage
+   Structure:
+     DB: PitCurveDB
+     Store: images  → key: imageId (string), value: { id, src (blob URL or base64) }
+     Store: meta    → key: 'cats'  → value: [{name, images:[{id,title}]}]
+                      key: 'idx'   → value: {catIndex: imgIndex}
+══════════════════════════════════════════════════ */
+const DB_NAME    = 'PitCurveDB';
+const DB_VERSION = 1;
+const PK         = 'pc_pin';
+
+let db = null;
 let D  = { cats: [], idx: {} };
-let CI = 0;  // current category index
+let CI = 0;
 let AT = null; // action target: 'cat' or 'img'
 
-function saveD() {
-  try {
-    localStorage.setItem(SK, JSON.stringify(D));
-  } catch(e) {
-    alert('Storage full — try removing some images.');
-  }
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('images')) d.createObjectStore('images', { keyPath: 'id' });
+      if (!d.objectStoreNames.contains('meta'))   d.createObjectStore('meta');
+    };
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror   = e => reject(e.target.error);
+  });
 }
 
-function loadD() {
-  try {
-    const raw = localStorage.getItem(SK);
-    if (raw) D = JSON.parse(raw);
-    else D = { cats: [], idx: {} };
-  } catch(e) {
-    D = { cats: [], idx: {} };
-  }
+// Save category/index metadata (no images — they go to IndexedDB separately)
+function saveMeta() {
+  return new Promise((resolve) => {
+    const tx = db.transaction('meta', 'readwrite');
+    const st = tx.objectStore('meta');
+    // Strip src from cats before saving meta — images stored separately
+    const metaCats = D.cats.map(cat => ({
+      name:   cat.name,
+      images: (cat.images || []).map(img => ({ id: img.id, title: img.title }))
+    }));
+    st.put(metaCats, 'cats');
+    st.put(D.idx,    'idx');
+    tx.oncomplete = resolve;
+  });
+}
+
+function loadMeta() {
+  return new Promise((resolve) => {
+    const tx = db.transaction('meta', 'readonly');
+    const st = tx.objectStore('meta');
+    const r1 = st.get('cats');
+    const r2 = st.get('idx');
+    let cats = null, idx = null;
+    r1.onsuccess = () => { cats = r1.result || []; tryResolve(); };
+    r2.onsuccess = () => { idx  = r2.result || {}; tryResolve(); };
+    r1.onerror = r2.onerror = () => tryResolve();
+    function tryResolve() {
+      if (cats !== null && idx !== null) resolve({ cats, idx });
+    }
+  });
+}
+
+function saveImage(id, src) {
+  return new Promise((resolve) => {
+    const tx = db.transaction('images', 'readwrite');
+    tx.objectStore('images').put({ id, src });
+    tx.oncomplete = resolve;
+    tx.onerror    = resolve; // don't crash on error
+  });
+}
+
+function getImage(id) {
+  return new Promise((resolve) => {
+    const tx = db.transaction('images', 'readonly');
+    const req = tx.objectStore('images').get(id);
+    req.onsuccess = () => resolve(req.result ? req.result.src : null);
+    req.onerror   = () => resolve(null);
+  });
+}
+
+function deleteImage(id) {
+  return new Promise((resolve) => {
+    const tx = db.transaction('images', 'readwrite');
+    tx.objectStore('images').delete(id);
+    tx.oncomplete = resolve;
+    tx.onerror    = resolve;
+  });
+}
+
+function deleteAllImages(ids) {
+  return Promise.all(ids.map(id => deleteImage(id)));
+}
+
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
 const getPin  = ()  => localStorage.getItem(PK);
 const savePin = (p) => localStorage.setItem(PK, p);
 
-/* ════════════════════════════════════════════════
-   SCREEN HELPERS
-════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   SCREEN & MODAL HELPERS
+══════════════════════════════════════════════════ */
 function goScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
   document.getElementById(id).classList.add('on');
 }
 
-/* ════════════════════════════════════════════════
-   MODAL HELPERS
-════════════════════════════════════════════════ */
 function openModal(id) {
   closeAllModals();
   document.getElementById(id).classList.add('on');
-  // Delay focus to avoid mobile keyboard causing layout jump
   const inp = document.querySelector('#' + id + ' input[type="text"]');
-  if (inp) {
-    setTimeout(() => {
-      inp.focus();
-      // move cursor to end
-      const len = inp.value.length;
-      inp.setSelectionRange(len, len);
-    }, 420);
-  }
+  if (inp) setTimeout(() => { try { inp.focus(); } catch(e) {} }, 420);
 }
+function closeModal(id)  { document.getElementById(id).classList.remove('on'); }
+function closeAllModals(){ document.querySelectorAll('.modal.on').forEach(m => m.classList.remove('on')); }
+function anyModalOpen()  { return !!document.querySelector('.modal.on'); }
 
-function closeModal(id) {
-  document.getElementById(id).classList.remove('on');
-}
-
-function closeAllModals() {
-  document.querySelectorAll('.modal.on').forEach(m => m.classList.remove('on'));
-}
-
-function anyModalOpen() {
-  return !!document.querySelector('.modal.on');
-}
-
-// tap backdrop to close
 document.querySelectorAll('.modal').forEach(m => {
-  m.addEventListener('click', e => {
-    if (e.target === m) closeModal(m.id);
-  });
+  m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
 });
 
-/* ════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    PIN
-════════════════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 let PB = '', PM = 'login', PF = '';
-
-const PLBL = {
-  login:          'Enter PIN',
-  setup_first:    'Choose a 4-digit PIN',
-  setup_confirm:  'Confirm your PIN',
-  change_old:     'Enter current PIN',
-  change_new:     'Enter new PIN',
-  change_confirm: 'Confirm new PIN'
-};
+const PLBL = { login:'Enter PIN', setup_first:'Choose a 4-digit PIN', setup_confirm:'Confirm your PIN', change_old:'Enter current PIN', change_new:'Enter new PIN', change_confirm:'Confirm new PIN' };
 
 function startPin() {
-  PB = ''; PF = '';
-  PM = getPin() ? 'login' : 'setup_first';
-  setPMsg(); updPDots(); buildPad();
-  goScreen('scr-pin');
+  PB=''; PF=''; PM = getPin() ? 'login' : 'setup_first';
+  setPMsg(); updPDots(); buildPad(); goScreen('scr-pin');
 }
 
 function buildPad() {
-  const el = document.getElementById('numpad');
-  el.innerHTML = '';
+  const el = document.getElementById('numpad'); el.innerHTML='';
   ['1','2','3','4','5','6','7','8','9','','0','⌫'].forEach(k => {
     const d = document.createElement('div');
-    d.className = 'nk' + (k === '' ? ' ghost' : k === '⌫' ? ' back' : '');
+    d.className = 'nk'+(k===''?' ghost':k==='⌫'?' back':'');
     d.textContent = k;
-    if (k !== '') {
-      d.addEventListener('click', () => {
-        d.classList.add('active');
-        setTimeout(() => d.classList.remove('active'), 120);
-        k === '⌫' ? pDel() : pTap(k);
-      });
-    }
+    if (k!=='') d.addEventListener('click', () => { k==='⌫' ? pDel() : pTap(k); });
     el.appendChild(d);
   });
 }
 
-function setPMsg(txt, bad) {
-  const el = document.getElementById('pin-msg');
-  el.textContent = txt || PLBL[PM];
-  el.classList.toggle('bad', !!bad);
-}
-
-function updPDots() {
-  document.querySelectorAll('#pin-dots .pd').forEach((d, i) => {
-    d.classList.toggle('lit', i < PB.length);
-  });
-}
+function setPMsg(txt,bad) { const el=document.getElementById('pin-msg'); el.textContent=txt||PLBL[PM]; el.classList.toggle('bad',!!bad); }
+function updPDots() { document.querySelectorAll('#pin-dots .pd').forEach((d,i)=>d.classList.toggle('lit',i<PB.length)); }
 
 function pErr(msg) {
-  setPMsg(msg, true);
-  const dots = document.getElementById('pin-dots');
+  setPMsg(msg,true);
+  const dots=document.getElementById('pin-dots');
   dots.classList.add('wiggle');
-  setTimeout(() => { dots.classList.remove('wiggle'); PB = ''; updPDots(); }, 420);
+  setTimeout(()=>{ dots.classList.remove('wiggle'); PB=''; updPDots(); },420);
 }
 
 function pTap(n) {
-  if (PB.length >= 4) return;
-  PB += n; updPDots();
-  if (PB.length < 4) return;
-
-  const stored = getPin();
-  setTimeout(() => {
-    switch (PM) {
-      case 'login':
-        if (PB === stored) pinPass();
-        else { pErr('Wrong PIN — try again'); setTimeout(() => setPMsg(), 1200); }
-        break;
-      case 'setup_first':
-        PF = PB; PB = ''; PM = 'setup_confirm'; setPMsg(); updPDots();
-        break;
-      case 'setup_confirm':
-        if (PB === PF) { savePin(PB); pinPass(); }
-        else { pErr("PINs don't match"); PM = 'setup_first'; PF = ''; setTimeout(() => setPMsg(), 1200); }
-        break;
-      case 'change_old':
-        if (PB === stored) { PB = ''; PM = 'change_new'; setPMsg(); updPDots(); }
-        else { pErr('Wrong PIN'); setTimeout(() => setPMsg(), 1200); }
-        break;
-      case 'change_new':
-        PF = PB; PB = ''; PM = 'change_confirm'; setPMsg(); updPDots();
-        break;
-      case 'change_confirm':
-        if (PB === PF) { savePin(PB); goApp(); }
-        else { pErr("PINs don't match"); PM = 'change_new'; PF = ''; setTimeout(() => setPMsg(), 1200); }
-        break;
+  if (PB.length>=4) return;
+  PB+=n; updPDots();
+  if (PB.length<4) return;
+  const stored=getPin();
+  setTimeout(()=>{
+    switch(PM){
+      case 'login':          if(PB===stored) pinPass(); else {pErr('Wrong PIN');setTimeout(()=>setPMsg(),1200);} break;
+      case 'setup_first':    PF=PB;PB='';PM='setup_confirm';setPMsg();updPDots(); break;
+      case 'setup_confirm':  if(PB===PF){savePin(PB);pinPass();}else{pErr("PINs don't match");PM='setup_first';PF='';setTimeout(()=>setPMsg(),1200);} break;
+      case 'change_old':     if(PB===stored){PB='';PM='change_new';setPMsg();updPDots();}else{pErr('Wrong PIN');setTimeout(()=>setPMsg(),1200);} break;
+      case 'change_new':     PF=PB;PB='';PM='change_confirm';setPMsg();updPDots(); break;
+      case 'change_confirm': if(PB===PF){savePin(PB);goApp();}else{pErr("PINs don't match");PM='change_new';PF='';setTimeout(()=>setPMsg(),1200);} break;
     }
-  }, 150);
+  },150);
 }
+function pDel() { if(PB.length){PB=PB.slice(0,-1);updPDots();} }
+function pinPass() { const el=document.getElementById('scr-pin'); el.classList.add('bye'); setTimeout(()=>{el.classList.remove('bye');goApp();},460); }
 
-function pDel() {
-  if (PB.length) { PB = PB.slice(0, -1); updPDots(); }
-}
-
-function pinPass() {
-  const el = document.getElementById('scr-pin');
-  el.classList.add('bye');
-  setTimeout(() => { el.classList.remove('bye'); goApp(); }, 460);
-}
-
-/* ════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    APP ENTRY
-════════════════════════════════════════════════ */
-function goApp() {
-  loadD();
-  if (!D.cats.length) {
-    goScreen('scr-empty');
-    return;
-  }
-  CI = Math.max(0, Math.min(CI, D.cats.length - 1));
+══════════════════════════════════════════════════ */
+async function goApp() {
+  const meta = await loadMeta();
+  D.cats = meta.cats || [];
+  D.idx  = meta.idx  || {};
+  if (!D.cats.length) { goScreen('scr-empty'); return; }
+  CI = Math.max(0, Math.min(CI, D.cats.length-1));
   goScreen('scr-viewer');
-  renderV();
+  await renderV();
 }
 
-/* ════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    VIEWER RENDER
-════════════════════════════════════════════════ */
-function renderV() {
-  const cat  = D.cats[CI];
+══════════════════════════════════════════════════ */
+async function renderV() {
+  const cat = D.cats[CI];
   if (!cat) return;
 
-  const imgs = cat.images || [];
-  const ii   = (D.idx[CI] !== undefined && D.idx[CI] !== null) ? D.idx[CI] : 0;
-  const img  = imgs[ii];
+  const imgs  = cat.images || [];
+  const ii    = (D.idx[CI] !== undefined) ? D.idx[CI] : 0;
+  const imgMeta = imgs[ii]; // { id, title }
 
-  // ── category name ──
+  // category name
   const cnEl = document.getElementById('v-catname');
   cnEl.textContent = cat.name;
-  cnEl.classList.remove('do-cat');
-  void cnEl.offsetWidth;
-  cnEl.classList.add('do-cat');
+  cnEl.classList.remove('do-cat'); void cnEl.offsetWidth; cnEl.classList.add('do-cat');
 
-  // ── image display (using <img> tag for reliability) ──
-  const vImgEl   = document.getElementById('v-img');
-  const vecEl    = document.getElementById('v-empty-cat');
-  const vtbEl    = document.getElementById('v-titlebox');
-  const vfadeEl  = document.getElementById('v-fade');
-  const vnameEl  = document.getElementById('v-ec-name');
+  const vImgEl  = document.getElementById('v-img');
+  const vecEl   = document.getElementById('v-empty-cat');
+  const vtbEl   = document.getElementById('v-titlebox');
+  const vfadeEl = document.getElementById('v-fade');
 
   if (!imgs.length) {
-    // no images — show empty cat screen
-    vImgEl.src = '';
-    vImgEl.style.display = 'none';
+    vImgEl.src = ''; vImgEl.style.display='none';
     vecEl.classList.add('show');
-    vnameEl.textContent = cat.name;
-    vtbEl.style.visibility = 'hidden';
-    vfadeEl.style.opacity = '0';
+    document.getElementById('v-ec-name').textContent = cat.name;
+    vtbEl.style.visibility='hidden'; vfadeEl.style.opacity='0';
   } else {
-    // show image
     vecEl.classList.remove('show');
-    vImgEl.style.display = 'block';
-    vImgEl.src = img.src;
-    vtbEl.style.visibility = 'visible';
-    vfadeEl.style.opacity = '1';
+    vImgEl.style.display='block';
+    vfadeEl.style.opacity='1'; vtbEl.style.visibility='visible';
+
+    // Load image from IndexedDB
+    const src = await getImage(imgMeta.id);
+    vImgEl.src = src || '';
 
     const vtEl = document.getElementById('v-title');
-    vtEl.textContent = img.title || '';
-    vtEl.classList.remove('do-title');
-    void vtEl.offsetWidth;
-    vtEl.classList.add('do-title');
+    vtEl.textContent = imgMeta.title || '';
+    vtEl.classList.remove('do-title'); void vtEl.offsetWidth; vtEl.classList.add('do-title');
   }
 
-  renderCDots();
-  renderIDots();
-  hideActions();
+  renderCDots(); renderIDots(); hideActions();
 }
 
 function renderCDots() {
-  const el = document.getElementById('v-catdots');
-  el.innerHTML = '';
-  D.cats.forEach((_, i) => {
-    const d = document.createElement('div');
-    d.className = 'cdot' + (i === CI ? ' on' : '');
-    d.addEventListener('click', () => navCat(i));
-    el.appendChild(d);
-  });
+  const el=document.getElementById('v-catdots'); el.innerHTML='';
+  D.cats.forEach((_,i)=>{ const d=document.createElement('div'); d.className='cdot'+(i===CI?' on':''); d.addEventListener('click',()=>navCat(i)); el.appendChild(d); });
 }
 
 function renderIDots() {
-  const el   = document.getElementById('v-imgdots');
-  el.innerHTML = '';
-  const imgs = D.cats[CI]?.images || [];
-  if (imgs.length <= 1) return;
-  const ii = D.idx[CI] || 0;
-  imgs.forEach((_, i) => {
-    const d = document.createElement('div');
-    d.className = 'idot' + (i === ii ? ' on' : '');
-    el.appendChild(d);
-  });
+  const el=document.getElementById('v-imgdots'); el.innerHTML='';
+  const imgs=D.cats[CI]?.images||[]; if(imgs.length<=1) return;
+  const ii=D.idx[CI]||0;
+  imgs.forEach((_,i)=>{ const d=document.createElement('div'); d.className='idot'+(i===ii?' on':''); el.appendChild(d); });
 }
 
-/* ════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    NAVIGATION
-════════════════════════════════════════════════ */
-function navCat(n) {
-  n = Math.max(0, Math.min(D.cats.length - 1, n));
-  CI = n;
-  renderV();
+══════════════════════════════════════════════════ */
+async function navCat(n) { n=Math.max(0,Math.min(D.cats.length-1,n)); CI=n; await renderV(); }
+async function navImg(dir) {
+  const imgs=D.cats[CI]?.images||[]; if(imgs.length<=1) return;
+  const ii=D.idx[CI]||0; const ni=Math.max(0,Math.min(imgs.length-1,ii+dir));
+  if(ni===ii) return;
+  D.idx[CI]=ni; await saveMeta(); await renderV();
 }
 
-function navImg(dir) {
-  const imgs = D.cats[CI]?.images || [];
-  if (imgs.length <= 1) return;
-  const ii = D.idx[CI] || 0;
-  const ni = Math.max(0, Math.min(imgs.length - 1, ii + dir));
-  if (ni === ii) return;
-  D.idx[CI] = ni;
-  saveD();
-  renderV();
+/* ══════════════════════════════════════════════════
+   SWIPE
+══════════════════════════════════════════════════ */
+let _sx=0,_sy=0,_active=false,_lpt=null,_clpt=null;
+const VS=document.getElementById('scr-viewer');
+
+VS.addEventListener('touchstart',e=>{
+  if(anyModalOpen()) return;
+  _sx=e.touches[0].clientX; _sy=e.touches[0].clientY; _active=true;
+  _lpt=setTimeout(()=>{ if(D.cats[CI]?.images?.length){AT='img';showActions();} },520);
+},{passive:true});
+VS.addEventListener('touchmove',()=>clearTimeout(_lpt),{passive:true});
+VS.addEventListener('touchend',e=>{
+  clearTimeout(_lpt);
+  if(!_active||anyModalOpen()){_active=false;return;} _active=false;
+  doSwipe(e.changedTouches[0].clientX-_sx, e.changedTouches[0].clientY-_sy);
+});
+VS.addEventListener('mousedown',e=>{
+  if(e.target.closest('.actbtn')||e.target.closest('#v-catbox')||e.target.closest('#action-btns')||anyModalOpen()) return;
+  _sx=e.clientX;_sy=e.clientY;_active=true;
+  _lpt=setTimeout(()=>{if(D.cats[CI]?.images?.length){AT='img';showActions();}},520);
+});
+VS.addEventListener('mousemove',()=>clearTimeout(_lpt));
+VS.addEventListener('mouseup',e=>{ clearTimeout(_lpt); if(!_active)return; _active=false; doSwipe(e.clientX-_sx,e.clientY-_sy); });
+
+function doSwipe(dx,dy) {
+  const ax=Math.abs(dx),ay=Math.abs(dy); if(Math.max(ax,ay)<38) return;
+  if(ax>ay) navImg(dx<0?1:-1);
+  else { const n=CI+(dy<0?1:-1); if(n>=0&&n<D.cats.length) navCat(n); }
 }
 
-/* ════════════════════════════════════════════════
-   SWIPE DETECTION
-════════════════════════════════════════════════ */
-let _sx = 0, _sy = 0, _active = false;
-let _lpt  = null;  // long press timer for image
-let _clpt = null;  // long press timer for category
-
-const VS = document.getElementById('scr-viewer');
-
-VS.addEventListener('touchstart', e => {
-  if (anyModalOpen()) return;
-  _sx = e.touches[0].clientX;
-  _sy = e.touches[0].clientY;
-  _active = true;
-  // long press on screen body → image actions
-  _lpt = setTimeout(() => {
-    if (D.cats[CI]?.images?.length) {
-      AT = 'img';
-      showActions();
-    }
-  }, 520);
-}, { passive: true });
-
-VS.addEventListener('touchmove', () => {
-  clearTimeout(_lpt);
-}, { passive: true });
-
-VS.addEventListener('touchend', e => {
-  clearTimeout(_lpt);
-  if (!_active || anyModalOpen()) { _active = false; return; }
-  _active = false;
-  doSwipe(e.changedTouches[0].clientX - _sx, e.changedTouches[0].clientY - _sy);
+document.addEventListener('keydown',e=>{
+  if(anyModalOpen()) return;
+  if(e.key==='ArrowLeft')navImg(-1); if(e.key==='ArrowRight')navImg(1);
+  if(e.key==='ArrowUp')navCat(CI-1); if(e.key==='ArrowDown')navCat(CI+1);
+  if(e.key==='Escape')hideActions();
 });
 
-// Mouse (desktop/PC testing)
-VS.addEventListener('mousedown', e => {
-  if (e.target.closest('.actbtn') || e.target.closest('#v-catbox') || e.target.closest('#action-btns') || anyModalOpen()) return;
-  _sx = e.clientX; _sy = e.clientY; _active = true;
-  _lpt = setTimeout(() => {
-    if (D.cats[CI]?.images?.length) { AT = 'img'; showActions(); }
-  }, 520);
-});
-VS.addEventListener('mousemove', () => clearTimeout(_lpt));
-VS.addEventListener('mouseup', e => {
-  clearTimeout(_lpt);
-  if (!_active) return;
-  _active = false;
-  doSwipe(e.clientX - _sx, e.clientY - _sy);
-});
+/* ══════════════════════════════════════════════════
+   LONG PRESS — CATEGORY
+══════════════════════════════════════════════════ */
+const CNBOX=document.getElementById('v-catname');
+function clpStart(){CNBOX.classList.add('pressing');_clpt=setTimeout(()=>{CNBOX.classList.remove('pressing');AT='cat';showActions();},700);}
+function clpEnd(){clearTimeout(_clpt);CNBOX.classList.remove('pressing');}
+CNBOX.addEventListener('touchstart',clpStart,{passive:true}); CNBOX.addEventListener('touchend',clpEnd); CNBOX.addEventListener('touchmove',clpEnd);
+CNBOX.addEventListener('mousedown',clpStart); CNBOX.addEventListener('mouseup',clpEnd); CNBOX.addEventListener('mouseleave',clpEnd);
 
-function doSwipe(dx, dy) {
-  const ax = Math.abs(dx), ay = Math.abs(dy);
-  if (Math.max(ax, ay) < 38) return;
-  if (ax > ay) navImg(dx < 0 ? 1 : -1);
-  else {
-    const n = CI + (dy < 0 ? 1 : -1);
-    if (n >= 0 && n < D.cats.length) navCat(n);
-  }
-}
+/* ══════════════════════════════════════════════════
+   LONG PRESS — TITLE
+══════════════════════════════════════════════════ */
+const TITLEEL=document.getElementById('v-title');
+function tlpStart(){TITLEEL.classList.add('pressing');_lpt=setTimeout(()=>{TITLEEL.classList.remove('pressing');if(D.cats[CI]?.images?.length){AT='img';showActions();}},520);}
+function tlpEnd(){clearTimeout(_lpt);TITLEEL.classList.remove('pressing');}
+TITLEEL.addEventListener('touchstart',tlpStart,{passive:true}); TITLEEL.addEventListener('touchend',tlpEnd); TITLEEL.addEventListener('touchmove',tlpEnd);
+TITLEEL.addEventListener('mousedown',tlpStart); TITLEEL.addEventListener('mouseup',tlpEnd); TITLEEL.addEventListener('mouseleave',tlpEnd);
 
-document.addEventListener('keydown', e => {
-  if (anyModalOpen()) return;
-  if (e.key === 'ArrowLeft')  navImg(-1);
-  if (e.key === 'ArrowRight') navImg(1);
-  if (e.key === 'ArrowUp')    navCat(CI - 1);
-  if (e.key === 'ArrowDown')  navCat(CI + 1);
-  if (e.key === 'Escape')     hideActions();
-});
-
-/* ════════════════════════════════════════════════
-   LONG PRESS — CATEGORY NAME
-════════════════════════════════════════════════ */
-const CNBOX = document.getElementById('v-catname');
-
-function clpStart() {
-  CNBOX.classList.add('pressing');
-  _clpt = setTimeout(() => {
-    CNBOX.classList.remove('pressing');
-    AT = 'cat';
-    showActions();
-  }, 700);
-}
-function clpEnd() {
-  clearTimeout(_clpt);
-  CNBOX.classList.remove('pressing');
-}
-
-CNBOX.addEventListener('touchstart', clpStart, { passive: true });
-CNBOX.addEventListener('touchend',   clpEnd);
-CNBOX.addEventListener('touchmove',  clpEnd);
-CNBOX.addEventListener('mousedown',  clpStart);
-CNBOX.addEventListener('mouseup',    clpEnd);
-CNBOX.addEventListener('mouseleave', clpEnd);
-
-/* ════════════════════════════════════════════════
-   LONG PRESS — TITLE TEXT
-════════════════════════════════════════════════ */
-const TITLEEL = document.getElementById('v-title');
-
-function tlpStart() {
-  TITLEEL.classList.add('pressing');
-  _lpt = setTimeout(() => {
-    TITLEEL.classList.remove('pressing');
-    if (D.cats[CI]?.images?.length) { AT = 'img'; showActions(); }
-  }, 520);
-}
-function tlpEnd() {
-  clearTimeout(_lpt);
-  TITLEEL.classList.remove('pressing');
-}
-
-TITLEEL.addEventListener('touchstart', tlpStart, { passive: true });
-TITLEEL.addEventListener('touchend',   tlpEnd);
-TITLEEL.addEventListener('touchmove',  tlpEnd);
-TITLEEL.addEventListener('mousedown',  tlpStart);
-TITLEEL.addEventListener('mouseup',    tlpEnd);
-TITLEEL.addEventListener('mouseleave', tlpEnd);
-
-/* ════════════════════════════════════════════════
-   ACTION BUTTONS (Edit / Delete)
-════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   ACTION BUTTONS
+══════════════════════════════════════════════════ */
 function showActions() {
-  const editBtn = document.getElementById('abtn-edit');
-  const delBtn  = document.getElementById('abtn-del');
-  if (AT === 'cat') {
-    editBtn.textContent = '✎ Rename';
-    delBtn.textContent  = '✕ Delete';
-  } else {
-    editBtn.textContent = '✎ Edit Title';
-    delBtn.textContent  = '✕ Delete';
-  }
+  const eb=document.getElementById('abtn-edit'), db2=document.getElementById('abtn-del');
+  if(AT==='cat'){eb.textContent='✒️ Rename';db2.textContent='🗑 Delete';}
+  else          {eb.textContent='✒️ Edit Title';db2.textContent='🗑 Delete';}
   document.getElementById('action-btns').classList.add('on');
 }
+function hideActions() { document.getElementById('action-btns').classList.remove('on'); AT=null; }
 
-function hideActions() {
-  document.getElementById('action-btns').classList.remove('on');
-  AT = null;
-}
+VS.addEventListener('click',e=>{ if(!e.target.closest('#action-btns')&&!e.target.closest('#v-catbox')&&!e.target.closest('#v-titlebox')) hideActions(); });
 
-// tap anywhere else on viewer to dismiss
-VS.addEventListener('click', e => {
-  if (!e.target.closest('#action-btns') &&
-      !e.target.closest('#v-catbox') &&
-      !e.target.closest('#v-titlebox')) {
-    hideActions();
-  }
-});
+document.getElementById('abtn-edit').onclick=()=>{ if(AT==='cat') doEditCat(); else doEditImg(); };
+document.getElementById('abtn-del').onclick =()=>{ if(AT==='cat') openDelCat(); else {hideActions();openModal('mod-del-img');} };
 
-document.getElementById('abtn-edit').onclick = () => {
-  if (AT === 'cat') doEditCat();
-  else doEditImg();
-};
-
-document.getElementById('abtn-del').onclick = () => {
-  if (AT === 'cat') openDelCat();
-  else { hideActions(); openModal('mod-del-img'); }
-};
-
-/* ════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    BUTTON WIRING
-════════════════════════════════════════════════ */
-document.getElementById('btn-new-cat-empty').onclick = () => openModal('mod-cat');
-document.getElementById('btn-settings').onclick      = () => goScreen('scr-settings');
-document.getElementById('btn-upload').onclick        = doUpload;
-document.getElementById('btn-new-cat').onclick       = () => openModal('mod-cat');
-document.getElementById('s-back').onclick            = goApp;
-document.getElementById('btn-change-pin').onclick    = doChangePin;
-document.getElementById('btn-wipe').onclick          = () => openModal('mod-wipe');
+══════════════════════════════════════════════════ */
+document.getElementById('btn-new-cat-empty').onclick=()=>openModal('mod-cat');
+document.getElementById('btn-settings').onclick=()=>goScreen('scr-settings');
+document.getElementById('btn-upload').onclick=doUpload;
+document.getElementById('btn-new-cat').onclick=()=>openModal('mod-cat');
+document.getElementById('s-back').onclick=goApp;
+document.getElementById('btn-change-pin').onclick=doChangePin;
+document.getElementById('btn-wipe').onclick=()=>openModal('mod-wipe');
+document.getElementById('btn-cat-cancel').onclick=()=>closeModal('mod-cat');
+document.getElementById('btn-cat-ok').onclick=doCatCreate;
+document.getElementById('inp-cat').onkeydown=e=>{if(e.key==='Enter')doCatCreate();};
+document.getElementById('btn-edit-cat-cancel').onclick=()=>closeModal('mod-edit-cat');
+document.getElementById('btn-edit-cat-ok').onclick=saveEditCat;
+document.getElementById('inp-edit-cat').onkeydown=e=>{if(e.key==='Enter')saveEditCat();};
+document.getElementById('btn-img-skip').onclick=doImgSkip;
+document.getElementById('btn-img-ok').onclick=doImgAdd;
+document.getElementById('inp-img').onkeydown=e=>{if(e.key==='Enter')doImgAdd();};
+document.getElementById('btn-edit-img-cancel').onclick=()=>closeModal('mod-edit-img');
+document.getElementById('btn-edit-img-ok').onclick=saveEditImg;
+document.getElementById('inp-edit-img').onkeydown=e=>{if(e.key==='Enter')saveEditImg();};
+document.getElementById('btn-di-cancel').onclick=()=>{closeModal('mod-del-img');hideActions();};
+document.getElementById('btn-di-ok').onclick=doImgDelete;
+document.getElementById('btn-dc-cancel').onclick=()=>closeModal('mod-del-cat');
+document.getElementById('btn-dc-ok').onclick=doCatDelete;
+document.getElementById('btn-wipe-cancel').onclick=()=>closeModal('mod-wipe');
+document.getElementById('btn-wipe-ok').onclick=doWipe;
 
-// New category
-document.getElementById('btn-cat-cancel').onclick = () => closeModal('mod-cat');
-document.getElementById('btn-cat-ok').onclick     = doCatCreate;
-document.getElementById('inp-cat').onkeydown      = e => { if (e.key === 'Enter') doCatCreate(); };
-
-// Edit category
-document.getElementById('btn-edit-cat-cancel').onclick = () => closeModal('mod-edit-cat');
-document.getElementById('btn-edit-cat-ok').onclick     = saveEditCat;
-document.getElementById('inp-edit-cat').onkeydown      = e => { if (e.key === 'Enter') saveEditCat(); };
-
-// Image title on upload
-document.getElementById('btn-img-skip').onclick = doImgSkip;
-document.getElementById('btn-img-ok').onclick   = doImgAdd;
-document.getElementById('inp-img').onkeydown    = e => { if (e.key === 'Enter') doImgAdd(); };
-
-// Edit image title
-document.getElementById('btn-edit-img-cancel').onclick = () => closeModal('mod-edit-img');
-document.getElementById('btn-edit-img-ok').onclick     = saveEditImg;
-document.getElementById('inp-edit-img').onkeydown      = e => { if (e.key === 'Enter') saveEditImg(); };
-
-// Delete image
-document.getElementById('btn-di-cancel').onclick = () => { closeModal('mod-del-img'); hideActions(); };
-document.getElementById('btn-di-ok').onclick     = doImgDelete;
-
-// Delete category
-document.getElementById('btn-dc-cancel').onclick = () => closeModal('mod-del-cat');
-document.getElementById('btn-dc-ok').onclick     = doCatDelete;
-
-// Wipe
-document.getElementById('btn-wipe-cancel').onclick = () => closeModal('mod-wipe');
-document.getElementById('btn-wipe-ok').onclick     = doWipe;
-
-/* ════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    CATEGORY ACTIONS
-════════════════════════════════════════════════ */
-function doCatCreate() {
-  const name = document.getElementById('inp-cat').value.trim();
-  if (!name) return;
-  D.cats.push({ name, images: [] });
-  D.idx[D.cats.length - 1] = 0;
-  saveD();
-  closeModal('mod-cat');
-  CI = D.cats.length - 1;
-  goApp();
+══════════════════════════════════════════════════ */
+async function doCatCreate() {
+  const name=document.getElementById('inp-cat').value.trim(); if(!name) return;
+  D.cats.push({name,images:[]}); D.idx[D.cats.length-1]=0;
+  await saveMeta(); closeModal('mod-cat');
+  CI=D.cats.length-1; await goApp();
 }
 
 function doEditCat() {
   hideActions();
-  const cat = D.cats[CI];
-  if (!cat) return;
-  const inp = document.getElementById('inp-edit-cat');
-  inp.value = cat.name;
-  openModal('mod-edit-cat');
+  const inp=document.getElementById('inp-edit-cat');
+  inp.value=D.cats[CI]?.name||''; openModal('mod-edit-cat');
 }
 
-function saveEditCat() {
-  const name = document.getElementById('inp-edit-cat').value.trim();
-  if (!name) return;
-  D.cats[CI].name = name;
-  saveD();
-  closeModal('mod-edit-cat');
-  renderV();
+async function saveEditCat() {
+  const name=document.getElementById('inp-edit-cat').value.trim(); if(!name) return;
+  D.cats[CI].name=name; await saveMeta(); closeModal('mod-edit-cat'); await renderV();
 }
 
 function openDelCat() {
   hideActions();
-  const cat = D.cats[CI];
-  if (!cat) return;
-  document.getElementById('del-cat-msg').textContent =
-    `"${cat.name}" and all its images will be removed.`;
+  document.getElementById('del-cat-msg').textContent=`"${D.cats[CI]?.name}" and all its images will be removed.`;
   openModal('mod-del-cat');
 }
 
-function doCatDelete() {
-  D.cats.splice(CI, 1);
-  CI = Math.max(0, CI - 1);
-  // rebuild idx map
-  const newIdx = {};
-  D.cats.forEach((_, i) => { newIdx[i] = 0; });
-  D.idx = newIdx;
-  saveD();
-  closeModal('mod-del-cat');
-  goApp();
+async function doCatDelete() {
+  const cat=D.cats[CI];
+  // delete all images from IndexedDB
+  const ids=(cat.images||[]).map(i=>i.id);
+  await deleteAllImages(ids);
+  D.cats.splice(CI,1); CI=Math.max(0,CI-1);
+  const ni={}; D.cats.forEach((_,i)=>ni[i]=0); D.idx=ni;
+  await saveMeta(); closeModal('mod-del-cat'); await goApp();
 }
 
-/* ════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════
+   IMAGE COMPRESSION
+══════════════════════════════════════════════════ */
+function compressImage(dataUrl) {
+  return new Promise((resolve) => {
+    const img=new Image();
+    img.onload=()=>{
+      const MAX=1080;
+      let w=img.width, h=img.height;
+      if(w>MAX||h>MAX){ if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;} }
+      const canvas=document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(canvas.toDataURL('image/jpeg',0.82));
+    };
+    img.onerror=()=>resolve(dataUrl);
+    img.src=dataUrl;
+  });
+}
+
+/* ══════════════════════════════════════════════════
    IMAGE UPLOAD
-════════════════════════════════════════════════ */
-let _files = [], _fi = 0, _queue = [];
+══════════════════════════════════════════════════ */
+let _files=[],_fi=0,_queue=[];
 
 function doUpload() {
-  if (!D.cats.length) { openModal('mod-cat'); return; }
-  document.getElementById('file-pick').value = '';
+  if(!D.cats.length){openModal('mod-cat');return;}
+  document.getElementById('file-pick').value='';
   document.getElementById('file-pick').click();
 }
 
-document.getElementById('file-pick').onchange = function() {
-  const files = Array.from(this.files);
-  if (!files.length) return;
-  _files = files;
-  _fi    = 0;
-  _queue = [];
-  nextFile();
+document.getElementById('file-pick').onchange=function(){
+  const files=Array.from(this.files); if(!files.length) return;
+  _files=files; _fi=0; _queue=[]; nextFile();
 };
 
 function nextFile() {
-  if (_fi >= _files.length) {
-    // All files processed — add to category and save
-    const cat = D.cats[CI];
-    if (!cat) return;
-    _queue.forEach(img => cat.images.push(img));
-    D.idx[CI] = Math.max(0, cat.images.length - 1);
-    saveD();
-    // Re-render viewer directly — no reload
-    goScreen('scr-viewer');
-    renderV();
-    return;
-  }
-
-  const file   = _files[_fi];
-  const reader = new FileReader();
-
-  reader.onload = e => {
-    const m  = document.getElementById('mod-img');
-    m._src   = e.target.result;
-    m._name  = file.name.replace(/\.[^.]+$/, '');
-    // Clear the input first
-    document.getElementById('inp-img').value = '';
+  if(_fi>=_files.length) { finishUpload(); return; }
+  const file=_files[_fi];
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    const compressed=await compressImage(e.target.result);
+    const m=document.getElementById('mod-img');
+    m._src=compressed; m._name=file.name.replace(/\.[^.]+$/,'');
+    document.getElementById('inp-img').value='';
     openModal('mod-img');
   };
-
-  reader.onerror = () => {
-    // Skip broken file
-    _fi++;
-    nextFile();
-  };
-
+  reader.onerror=()=>{_fi++;nextFile();};
   reader.readAsDataURL(file);
 }
 
+async function finishUpload() {
+  // Save all queued images to IndexedDB
+  for (const item of _queue) {
+    await saveImage(item.id, item.src);
+    D.cats[CI].images.push({ id: item.id, title: item.title });
+  }
+  D.idx[CI]=Math.max(0,D.cats[CI].images.length-1);
+  await saveMeta();
+  goScreen('scr-viewer');
+  await renderV();
+}
+
 function doImgAdd() {
-  const m     = document.getElementById('mod-img');
-  const title = document.getElementById('inp-img').value.trim() || m._name;
-  _queue.push({ src: m._src, title });
-  _fi++;
-  closeModal('mod-img');
-  // Small delay before next file to let modal close cleanly
-  setTimeout(nextFile, 200);
+  const m=document.getElementById('mod-img');
+  const title=document.getElementById('inp-img').value.trim()||m._name;
+  _queue.push({id:genId(), src:m._src, title});
+  _fi++; closeModal('mod-img'); setTimeout(nextFile,200);
 }
 
 function doImgSkip() {
-  const m = document.getElementById('mod-img');
-  _queue.push({ src: m._src, title: m._name });
-  _fi++;
-  closeModal('mod-img');
-  setTimeout(nextFile, 200);
+  const m=document.getElementById('mod-img');
+  _queue.push({id:genId(), src:m._src, title:m._name});
+  _fi++; closeModal('mod-img'); setTimeout(nextFile,200);
 }
 
 function doEditImg() {
   hideActions();
-  const imgs = D.cats[CI]?.images || [];
-  const ii   = D.idx[CI] || 0;
-  const img  = imgs[ii];
-  if (!img) return;
-  const inp = document.getElementById('inp-edit-img');
-  inp.value = img.title || '';
-  openModal('mod-edit-img');
+  const imgs=D.cats[CI]?.images||[]; const ii=D.idx[CI]||0;
+  const inp=document.getElementById('inp-edit-img');
+  inp.value=imgs[ii]?.title||''; openModal('mod-edit-img');
 }
 
-function saveEditImg() {
-  const title = document.getElementById('inp-edit-img').value.trim();
-  const imgs  = D.cats[CI]?.images || [];
-  const ii    = D.idx[CI] || 0;
-  if (imgs[ii]) imgs[ii].title = title;
-  saveD();
-  closeModal('mod-edit-img');
-  renderV();
+async function saveEditImg() {
+  const title=document.getElementById('inp-edit-img').value.trim();
+  const imgs=D.cats[CI]?.images||[]; const ii=D.idx[CI]||0;
+  if(imgs[ii]) imgs[ii].title=title;
+  await saveMeta(); closeModal('mod-edit-img'); await renderV();
 }
 
-function doImgDelete() {
-  const cat = D.cats[CI];
-  const ii  = D.idx[CI] || 0;
-  cat.images.splice(ii, 1);
-  D.idx[CI] = Math.max(0, Math.min(ii, cat.images.length - 1));
-  saveD();
-  closeModal('mod-del-img');
-  hideActions();
-  renderV();
+async function doImgDelete() {
+  const cat=D.cats[CI]; const ii=D.idx[CI]||0;
+  const img=cat.images[ii];
+  if(img) await deleteImage(img.id);
+  cat.images.splice(ii,1);
+  D.idx[CI]=Math.max(0,Math.min(ii,cat.images.length-1));
+  await saveMeta(); closeModal('mod-del-img'); hideActions(); await renderV();
 }
 
-/* ════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    SETTINGS
-════════════════════════════════════════════════ */
-function doChangePin() {
-  PB = ''; PF = ''; PM = 'change_old';
-  setPMsg(); updPDots(); buildPad();
-  goScreen('scr-pin');
+══════════════════════════════════════════════════ */
+function doChangePin() { PB='';PF='';PM='change_old';setPMsg();updPDots();buildPad();goScreen('scr-pin'); }
+
+async function doWipe() {
+  // Clear IndexedDB
+  await new Promise(resolve=>{
+    const req=indexedDB.deleteDatabase(DB_NAME);
+    req.onsuccess=req.onerror=resolve;
+  });
+  localStorage.removeItem(PK);
+  D={cats:[],idx:{}}; CI=0;
+  closeAllModals(); startPin();
 }
 
-function doWipe() {
-  localStorage.removeItem(SK);
-  localStorage.removeItem(PK);
-  D  = { cats: [], idx: {} };
-  CI = 0;
-  closeAllModals();
+/* ══════════════════════════════════════════════════
+   SERVICE WORKER
+══════════════════════════════════════════════════ */
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+/* ══════════════════════════════════════════════════
+   BOOT
+══════════════════════════════════════════════════ */
+async function boot() {
+  try {
+    await openDB();
+  } catch(e) {
+    console.error('IndexedDB failed:', e);
+  }
+  // Hide loading screen
+  const load=document.getElementById('loading');
+  load.classList.add('hide');
+  setTimeout(()=>load.style.display='none', 400);
   startPin();
 }
 
-/* ════════════════════════════════════════════════
-   SERVICE WORKER
-════════════════════════════════════════════════ */
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
-
-/* ════════════════════════════════════════════════
-   BOOT
-════════════════════════════════════════════════ */
-startPin();
+boot();
 </script>
 </body>
 </html>
